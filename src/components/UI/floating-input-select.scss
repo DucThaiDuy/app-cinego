@@ -1,0 +1,104 @@
+/* ================= VARIABLES ================= */
+$border: #e5e7eb;
+$border-focus: #0a0a0a;
+$border-error: #ef4444;
+
+$text-main: #0f172a;
+$text-muted: #64748b;
+$text-error: #ef4444;
+
+$bg-card: #ffffff;
+
+/* ================= FLOATING SELECT ================= */
+.floating-select {
+  width: 100%;
+  margin-bottom: 24px;
+
+  /* ---------- WRAPPER ---------- */
+  &__wrapper {
+    position: relative;
+  }
+
+  /* ---------- SELECT ---------- */
+  &__input {
+    width: 100%;
+    height: 35px; // 👉 giảm chiều cao cho gọn
+    padding: 0 40px 0 14px; // chừa chỗ mũi tên
+    font-size: 14px;
+    border-radius: 8px;
+    border: 1px solid $border;
+    background: $bg-card;
+    color: $text-main;
+    outline: none;
+    appearance: none;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+
+    &:focus {
+      border-color: $border-focus;
+    }
+  }
+
+  /* ---------- LABEL ---------- */
+  &__label {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 0 6px;
+    font-size: 14px;
+    color: $text-muted;
+    background: $bg-card; // che border
+    pointer-events: none;
+    transition: 0.25s ease;
+  }
+
+  &__label--float {
+    top: 0;
+    transform: translateY(-40%);
+    font-size: 12px;
+    color: $border-focus;
+  }
+
+  /* ---------- REQUIRED ---------- */
+  &__required {
+    color: $text-error;
+    margin-left: 4px;
+  }
+
+  /* ---------- ARROW ---------- */
+  &__arrow {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $text-muted;
+    pointer-events: none;
+  }
+
+  /* ---------- ERROR ICON ---------- */
+  &__error-icon {
+    position: absolute;
+    right: 36px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $border-error;
+  }
+
+  /* ---------- ERROR STATE ---------- */
+  &__wrapper--error {
+    .floating-select__input {
+      border-color: $border-error;
+    }
+
+    .floating-select__label {
+      color: $border-error;
+    }
+  }
+
+  &__error-message {
+    margin-top: 6px;
+    font-size: 12px;
+    color: $text-error;
+  }
+}

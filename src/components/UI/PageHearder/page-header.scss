@@ -1,0 +1,72 @@
+/* ===============================
+   PAGE HEADER
+================================ */
+.page-header-wrapper {
+  margin-bottom: 1.5rem;
+
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+
+    .back-btn {
+      margin-right: 8px;
+      height: 32px;
+      padding: 0 10px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      background: #fff;
+      font-size: 13px;
+      cursor: pointer;
+
+      &:hover {
+        border-color: #1976d2;
+        color: #1976d2;
+      }
+    }
+
+    span {
+      &.active {
+        color: var(--text);
+        font-weight: 600;
+        cursor: default;
+      }
+
+      &:not(.active) {
+        cursor: pointer;
+
+        &:hover {
+          color: var(--text);
+        }
+      }
+    }
+
+    .separator {
+      color: var(--text-muted);
+      cursor: default;
+    }
+  }
+
+  .page-header {
+    display: flex;
+    justify-content: flex-end;
+
+    .btn-add {
+      height: 40px;
+      padding: 0 16px;
+      border-radius: 8px;
+      background: #1976d2;
+      color: #fff;
+      border: none;
+      font-weight: 500;
+      cursor: pointer;
+
+      &:hover {
+        background: #125aa3;
+      }
+    }
+  }
+}

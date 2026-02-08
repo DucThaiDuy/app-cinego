@@ -1,0 +1,37 @@
+.arrow-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 26px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+
+  background: linear-gradient(135deg, #e50914, #b20710);
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+
+  box-shadow: 0 12px 35px rgba(229, 9, 20, 0.45);
+  transition: all 0.3s ease;
+
+  .icon {
+    display: flex;
+    font-size: 20px;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover {
+    box-shadow: 0 16px 45px rgba(229, 9, 20, 0.7);
+    transform: translateY(-2px);
+
+    .icon {
+      transform: translateX(6px);
+    }
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 8px 20px rgba(229, 9, 20, 0.5);
+  }
+}

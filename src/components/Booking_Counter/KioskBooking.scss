@@ -1,0 +1,368 @@
+/* ===============================
+   KIOSK BOOKING - TOUCH FRIENDLY
+================================ */
+
+.kiosk-booking {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+  color: #fff;
+  padding: 3rem 2rem;
+  max-width: 1600px;
+  margin: 0 auto;
+  font-family: "Segoe UI", sans-serif;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+
+  @media (max-width: 768px) {
+    padding: 2rem 1.5rem;
+  }
+}
+
+/* ===== HEADER ===== */
+.kiosk-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  animation: fadeInDown 0.6s ease;
+
+  h1 {
+    font-size: 4rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff, #ccc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+
+    @media (max-width: 768px) {
+      font-size: 2.5rem;
+    }
+  }
+
+  p {
+    font-size: 1.5rem;
+    color: #aaa;
+
+    @media (max-width: 768px) {
+      font-size: 1.1rem;
+    }
+  }
+}
+
+/* ===== SEARCH BAR ===== */
+.search-bar {
+  margin-bottom: 2.5rem;
+  animation: fadeInUp 0.6s ease;
+
+  input {
+    width: 100%;
+    padding: 1.75rem 2rem;
+    font-size: 1.5rem;
+    border-radius: 1.5rem;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    outline: none;
+    transition: all 0.3s ease;
+
+    &::placeholder {
+      color: #666;
+    }
+
+    &:focus {
+      border-color: #fff;
+      box-shadow: 0 0 40px rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    @media (max-width: 768px) {
+      padding: 1.25rem 1.5rem;
+      font-size: 1.2rem;
+    }
+  }
+}
+
+/* ===== CATEGORIES ===== */
+.categories {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 3rem;
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  padding-bottom: 1rem;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    height: 6px;
+    display: block;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+  }
+}
+
+.category-btn {
+  padding: 1.25rem 2.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  border-radius: 3rem;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: #ccc;
+  white-space: nowrap;
+  cursor: pointer;
+  flex-shrink: 0;
+  min-height: 60px;
+  transition: all 0.3s ease;
+
+  &:hover,
+  &.active {
+    background: #fff;
+    color: #000;
+    border-color: #fff;
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  @media (max-width: 768px) {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    min-height: 50px;
+  }
+}
+
+/* ===== MOVIES SECTION ===== */
+.movies-section {
+  margin-bottom: 4rem;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  padding-left: 1rem;
+  border-left: 6px solid #fff;
+  animation: fadeInLeft 0.6s ease;
+
+  @media (max-width: 768px) {
+    font-size: 1.8rem;
+  }
+}
+
+/* ===== MOVIES GRID ===== */
+.movies-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2.5rem;
+  animation: fadeInUp 0.6s ease 0.3s backwards;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+/* ===== MOVIE CARD ===== */
+.movie-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 3px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.5rem;
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.4s ease;
+
+  &:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+
+    .movie-overlay {
+      opacity: 1;
+    }
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  @media (max-width: 768px) {
+    border-radius: 1rem;
+  }
+}
+
+/* ===== MOVIE POSTER ===== */
+.movie-poster-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.movie-poster {
+  width: 100%;
+  aspect-ratio: 2/3;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+
+  .movie-card:hover & {
+    transform: scale(1.05);
+  }
+}
+
+.movie-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.7) 60%,
+    rgba(0, 0, 0, 0.9) 100%
+  );
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 2rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* ===== BOOK BUTTON ===== */
+.book-btn {
+  width: 100%;
+  padding: 1.25rem 2rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  background: #fff;
+  color: #000;
+  border: none;
+  border-radius: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 60px;
+
+  &:active {
+    transform: scale(0.95);
+    background: #f0f0f0;
+  }
+
+  @media (max-width: 768px) {
+    padding: 1rem 1.5rem;
+    font-size: 1.1rem;
+    min-height: 50px;
+  }
+}
+
+/* ===== MOVIE INFO ===== */
+.movie-info {
+  padding: 1.5rem;
+
+  @media (max-width: 768px) {
+    padding: 1.25rem;
+  }
+}
+
+.movie-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @media (max-width: 768px) {
+    font-size: 1.2rem;
+  }
+}
+
+.movie-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  color: #999;
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
+  }
+}
+
+.rating {
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+/* ===== GENRE TAGS ===== */
+.genre-tags {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.genre-tag {
+  padding: 0.625rem 1.25rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #ccc;
+
+  @media (max-width: 768px) {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  text-align: center;
+  padding: 6rem 2rem;
+  font-size: 1.5rem;
+  color: #666;
+  animation: fadeInUp 0.6s ease;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

@@ -1,0 +1,71 @@
+/* ===== VARIABLES ===== */
+$border: #e5e7eb;
+$primary: #0a0a0a;
+$error: #dc2626;
+$text-main: #0f172a;
+$text-muted: #64748b;
+$bg-card: #ffffff;
+
+/* ===== TEXTAREA FLOATING ===== */
+.input-field {
+  position: relative;
+  width: 100%;
+  margin-bottom: 24px;
+
+  textarea {
+    width: 100%;
+    min-height: 96px;
+    padding: 14px;
+    font-size: 14px;
+    line-height: 1.5;
+
+    border-radius: 10px;
+    border: 1px solid $border;
+    outline: none;
+    resize: vertical;
+
+    background: $bg-card;
+    color: $text-main;
+    transition: border-color 0.25s ease;
+  }
+
+  /* LABEL */
+  label {
+    position: absolute;
+    left: 12px;
+    top: 16px;
+
+    padding: 0 6px;
+    font-size: 14px;
+    color: $text-muted;
+    pointer-events: none;
+
+    background: $bg-card; // ⭐ che border
+    transition: 0.25s ease;
+  }
+
+  .required {
+    margin-left: 4px;
+    color: $error;
+  }
+
+  /* ACTIVE (FOCUS OR HAS VALUE) */
+  &.active {
+    textarea {
+      border-color: $primary;
+    }
+
+    label {
+      top: -8px;
+      font-size: 12px;
+      color: $primary;
+    }
+  }
+
+  /* ERROR */
+  .input-error {
+    margin-top: 6px;
+    font-size: 12px;
+    color: $error;
+  }
+}

@@ -1,0 +1,207 @@
+/* TicketBooking.scss */
+.ticket-booking {
+  min-height: 100vh;
+  background: #0d0d0d;
+  color: #fff;
+  padding: 2rem 3rem;
+  font-family: "Poppins", sans-serif;
+
+  @media (max-width: 768px) {
+    padding: 1rem 1.5rem;
+  }
+
+  h2 {
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
+    color: #f0f0f0;
+    border-left: 5px solid #ffcc00;
+    padding-left: 0.5rem;
+
+    @media (max-width: 768px) {
+      font-size: 1.4rem;
+    }
+  }
+
+  .header {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2.5rem;
+    align-items: flex-start;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .poster {
+      width: 220px;
+      border-radius: 1rem;
+      box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
+
+      @media (max-width: 768px) {
+        width: 180px;
+      }
+    }
+
+    .movie-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+
+      h1 {
+        font-size: 2rem;
+        margin: 0;
+        color: #ffcc00;
+
+        @media (max-width: 768px) {
+          font-size: 1.6rem;
+          text-align: center;
+        }
+      }
+
+      p {
+        margin: 0.25rem 0;
+        color: #ccc;
+
+        &.description {
+          font-size: 0.95rem;
+          color: #aaa;
+        }
+      }
+    }
+  }
+
+  .format-selection,
+  .showtime-selection {
+    margin-bottom: 2rem;
+
+    .format-list,
+    .showtime-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .format-btn,
+    .showtime-btn {
+      padding: 0.7rem 1.5rem;
+      border-radius: 2rem;
+      border: 2px solid #555;
+      background: #1a1a1a;
+      color: #ccc;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &.active {
+        background: #ffcc00;
+        color: #000;
+        border-color: #ffcc00;
+      }
+
+      &:hover {
+        transform: scale(1.05);
+        border-color: #ffcc00;
+      }
+    }
+  }
+
+  .seat-selection {
+    margin-bottom: 2rem;
+
+    .screen {
+      background: #222;
+      text-align: center;
+      padding: 0.8rem 0;
+      border-radius: 1rem;
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      color: #ffcc00;
+    }
+
+    .seats-grid {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 0.6rem;
+
+      @media (max-width: 768px) {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 0.4rem;
+      }
+
+      .seat {
+        background: #1a1a1a;
+        color: #fff;
+        border-radius: 0.5rem;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid #555;
+
+        &.available:hover {
+          background: #333;
+          transform: scale(1.1);
+        }
+
+        &.selected {
+          background: #ffcc00;
+          color: #000;
+          border-color: #ffcc00;
+        }
+
+        &.booked {
+          background: #444;
+          color: #888;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+
+  .checkout {
+    background: #1a1a1a;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
+
+    p {
+      margin: 0;
+      font-size: 1rem;
+
+      strong {
+        color: #ffcc00;
+      }
+    }
+
+    .book-btn {
+      margin-top: 1rem;
+      padding: 0.8rem 2rem;
+      background: #ffcc00;
+      color: #000;
+      border: none;
+      border-radius: 2rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      &:hover:not(:disabled) {
+        transform: scale(1.05);
+      }
+    }
+  }
+}

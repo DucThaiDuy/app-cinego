@@ -1,0 +1,125 @@
+/* ===============================
+   VARIABLES
+================================ */
+:root {
+  --primary: #1d4ed8;
+  --danger: #ef4444;
+  --bg: #ffffff;
+  --bg-soft: #f3f4f6;
+  --border: #e5e7eb;
+  --text: #111827;
+  --text-muted: #6b7280;
+}
+
+/* ===============================
+   ACTOR PAGE
+================================ */
+.actor-page {
+  // padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  // gap: 1.5rem;
+}
+
+/* ===============================
+   SEARCH
+================================ */
+.actor-page__search {
+  display: flex;
+  align-items: center;
+  max-width: 420px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 0.5rem;
+
+  .search-icon {
+    margin-left: 0.5rem;
+    color: var(--text-muted);
+  }
+
+  input {
+    border: none;
+    outline: none;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+
+    &::placeholder {
+      color: var(--text-muted);
+    }
+  }
+}
+
+/* ===============================
+   TABLE
+================================ */
+.actor-table-wrapper {
+  overflow-x: auto;
+}
+
+.actor-table {
+  width: 100%;
+  min-width: 600px;
+  border-collapse: collapse;
+  background: var(--bg);
+  border-radius: 0.75rem;
+  overflow: hidden;
+
+  th,
+  td {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    text-align: left;
+  }
+
+  th {
+    background: var(--bg-soft);
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  tbody tr {
+    border-top: 1px solid var(--border);
+
+    &:hover {
+      background: var(--bg-soft);
+    }
+  }
+
+  .actor-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .slug {
+    font-family: monospace;
+    color: var(--text-muted);
+  }
+
+  .bio {
+    max-width: 320px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 768px) {
+  .page-header-wrapper .page-header {
+    justify-content: flex-start;
+  }
+
+  .actor-page__search {
+    max-width: 100%;
+  }
+}

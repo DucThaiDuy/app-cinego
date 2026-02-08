@@ -1,0 +1,371 @@
+// cinema-management.scss
+
+/* ===============================
+   VARIABLES
+================================ */
+:root {
+  --primary: #000000;
+  --primary-soft: rgba(0, 0, 0, 0.05);
+  --danger: #ef4444;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --bg: #ffffff;
+  --bg-soft: #f9fafb;
+  --border: #e5e7eb;
+  --text: #111827;
+  --text-muted: #6b7280;
+}
+
+/* ===============================
+   CINEMA PAGE
+================================ */
+.cinema-page {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  // padding: 2rem;
+  box-sizing: border-box;
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0 0 2rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    @media (max-width: 640px) {
+      font-size: 1.5rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+  }
+
+  @media (max-width: 640px) {
+    padding: 1rem;
+  }
+}
+
+/* ===============================
+   FILTERS
+================================ */
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+
+  input,
+  select {
+    padding: 0.75rem 1rem;
+    background: var(--bg);
+    border: 2px solid var(--border);
+    border-radius: 0.5rem;
+    color: var(--text);
+    font-size: 0.9375rem;
+    transition: all 0.2s ease;
+    outline: none;
+
+    &::placeholder {
+      color: var(--text-muted);
+    }
+
+    &:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-soft);
+    }
+
+    &:hover {
+      border-color: var(--text-muted);
+    }
+  }
+
+  input {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  select {
+    min-width: 180px;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236b7280' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
+  }
+
+  .btn-primary {
+    padding: 0.75rem 1.5rem;
+    background: var(--primary);
+    color: var(--bg);
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+
+    &:hover {
+      opacity: 0.85;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: stretch;
+
+    input,
+    select,
+    .btn-primary {
+      width: 100%;
+    }
+  }
+}
+
+/* ===============================
+   CINEMA TABLE
+================================ */
+.cinema-table {
+  width: 100%;
+  background: var(--bg);
+  border: 2px solid var(--border);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border-collapse: separate;
+  border-spacing: 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+
+  // ========== THEAD ==========
+  thead {
+    background: linear-gradient(135deg, var(--bg-soft) 0%, var(--bg) 100%);
+
+    tr {
+      border-bottom: 2px solid var(--border);
+    }
+
+    th {
+      padding: 1rem 1.25rem;
+      text-align: left;
+      font-size: 0.8125rem;
+      font-weight: 700;
+      color: var(--text);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+
+      &:first-child {
+        border-radius: 0.75rem 0 0 0;
+      }
+
+      &:last-child {
+        border-radius: 0 0.75rem 0 0;
+      }
+    }
+  }
+
+  // ========== TBODY ==========
+  tbody {
+    tr {
+      border-bottom: 1px solid var(--border);
+      transition: all 0.2s ease;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &:hover {
+        background: var(--bg-soft);
+      }
+    }
+
+    td {
+      padding: 1rem 1.25rem;
+      font-size: 0.9375rem;
+      color: var(--text);
+      vertical-align: middle;
+
+      // ========== STATUS BADGE ==========
+      .status {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.375rem 0.875rem;
+        border-radius: 9999px;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        text-transform: capitalize;
+        white-space: nowrap;
+
+        &.active {
+          background: rgba(16, 185, 129, 0.1);
+          color: var(--success);
+        }
+
+        &.inactive {
+          background: rgba(107, 114, 128, 0.1);
+          color: var(--text-muted);
+        }
+
+        &.maintenance {
+          background: rgba(245, 158, 11, 0.1);
+          color: var(--warning);
+        }
+      }
+
+      // ========== EMPTY STATE ==========
+      &.empty {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-muted);
+        font-size: 1rem;
+      }
+    }
+
+    // ========== ACTIONS ==========
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      button {
+        padding: 0.5rem 1rem;
+        background: var(--bg-soft);
+        color: var(--text);
+        border: 1.5px solid var(--border);
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+
+        &:hover {
+          background: var(--bg);
+          border-color: var(--text);
+          transform: translateY(-1px);
+        }
+
+        &:active {
+          transform: translateY(0);
+        }
+
+        &.danger {
+          background: rgba(239, 68, 68, 0.05);
+          color: var(--danger);
+          border-color: rgba(239, 68, 68, 0.2);
+
+          &:hover {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: var(--danger);
+          }
+        }
+      }
+    }
+  }
+
+  // ========== RESPONSIVE ==========
+  @media (max-width: 1024px) {
+    display: block;
+    border: none;
+    box-shadow: none;
+
+    thead {
+      display: none;
+    }
+
+    tbody {
+      display: block;
+
+      tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 2px solid var(--border);
+        border-radius: 0.75rem;
+        overflow: hidden;
+        background: var(--bg);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+
+        &:hover {
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+      }
+
+      td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.875rem 1rem;
+        border-bottom: 1px solid var(--border);
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        &::before {
+          content: attr(data-label);
+          font-weight: 600;
+          color: var(--text-muted);
+          font-size: 0.8125rem;
+          text-transform: uppercase;
+          letter-spacing: 0.025em;
+        }
+
+        &.empty {
+          display: block;
+          text-align: center;
+
+          &::before {
+            display: none;
+          }
+        }
+      }
+
+      .actions {
+        justify-content: flex-end;
+        width: 100%;
+
+        button {
+          flex: 1;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 640px) {
+    tbody {
+      .actions {
+        flex-direction: column;
+
+        button {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+/* ===============================
+   DARK MODE
+================================ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary: #ffffff;
+    --primary-soft: rgba(255, 255, 255, 0.05);
+    --bg: #111827;
+    --bg-soft: #1f2937;
+    --border: #374151;
+    --text: #f9fafb;
+    --text-muted: #9ca3af;
+  }
+}

@@ -1,0 +1,260 @@
+/* Reset CSS */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Trang Đăng Nhập */
+.login-page {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    radial-gradient(circle at top, rgba(229, 9, 20, 0.25), transparent 60%),
+    linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.9)),
+    url("https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Card Đăng Nhập */
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 36px 32px;
+
+  background: rgba(20, 20, 20, 0.75);
+  backdrop-filter: blur(14px);
+
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  box-shadow:
+    0 30px 60px rgba(0, 0, 0, 0.7),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+
+  text-align: center;
+  color: #fff;
+
+  animation: fadeUp 0.8s ease;
+
+  .title {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #e50914;
+    margin-bottom: 6px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: #bdbdbd;
+    margin-bottom: 28px;
+  }
+}
+
+/* Form Group */
+.form-group {
+  margin-bottom: 18px;
+  text-align: left;
+
+  label {
+    font-size: 12px;
+    color: #ccc;
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  input {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px solid #2a2a2a;
+    background: rgba(0, 0, 0, 0.4);
+    color: #fff;
+    font-size: 14px;
+    transition: 0.3s;
+
+    &:focus {
+      border-color: #e50914;
+      box-shadow: 0 0 0 2px rgba(229, 9, 20, 0.25);
+      outline: none;
+    }
+  }
+
+  .error-text {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #ff4c4c;
+  }
+}
+
+/* Password Wrapper */
+.password-wrapper {
+  position: relative;
+
+  .toggle {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    cursor: pointer;
+    color: #e50914;
+    user-select: none;
+  }
+}
+
+/* Language Switch */
+.lang-switch {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  opacity: 0.8;
+  transition: 0.2s;
+
+  &:hover {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+/* Nút Đăng Nhập */
+.btn-login {
+  width: 100%;
+  margin-top: 10px;
+  padding: 14px;
+
+  background: linear-gradient(135deg, #e50914, #b20710);
+  border: none;
+  border-radius: 12px;
+
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+
+  transition: 0.3s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(229, 9, 20, 0.4);
+  }
+}
+
+/* Nút Đăng Nhập với Google */
+.btn-google {
+  width: 100%;
+  margin-top: 14px;
+  padding: 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+
+  transition: 0.3s;
+
+  img {
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+  }
+}
+
+/* Divider */
+.divider {
+  margin: 22px 0;
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  color: #aaa;
+
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  span {
+    padding: 0 12px;
+  }
+}
+
+/* Extra Links */
+.extra {
+  margin-top: 22px;
+  font-size: 13px;
+  color: #aaa;
+
+  a {
+    color: #e50914;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+/* Animation Fade Up */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .login-card {
+    padding: 28px 20px;
+
+    .title {
+      font-size: 26px;
+    }
+
+    .subtitle {
+      font-size: 12px;
+    }
+
+    .btn-login,
+    .btn-google {
+      font-size: 14px;
+      padding: 12px;
+    }
+  }
+
+  .lang-switch {
+    font-size: 12px;
+    top: 12px;
+    right: 12px;
+  }
+}
