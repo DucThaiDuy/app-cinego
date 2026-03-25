@@ -1,0 +1,5 @@
+export const CINEMA_STATUS = {
+    ACTIVE: "ACTIVE",
+    INACTIVE: "INACTIVE",
+    MAINTENANCE: "MAINTENANCE",
+};

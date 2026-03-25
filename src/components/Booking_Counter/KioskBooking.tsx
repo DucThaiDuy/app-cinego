@@ -1,211 +1,341 @@
 // KioskBooking.tsx
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import "./KioskBooking.scss";
 
-/* ===== TYPES ===== */
+type Seat = {
+  id: string;
+  row: string;
+  number: number;
+  status: "available" | "booked" | "selected";
+};
+
 type Movie = {
   id: number;
   title: string;
   poster: string;
-  rating: number;
   duration: number;
-  genres: string[];
-  category: string;
-  status: "now_showing" | "coming_soon";
+  screen: string;
 };
 
-/* ===== MOCK DATA ===== */
-const mockMovies: Movie[] = [
+const seatingRows = [
+  "A",
+  "B",
+  "C",
+  "D",
+  "E",
+  "F",
+  "G",
+  "H",
+  "I",
+  "J",
+  "K",
+  "L",
+];
+const seatsPerRow = 16;
+const seatPrice = 100000;
+
+const movieList: Movie[] = [
   {
     id: 1,
-    title: "Mission: Impossible",
-    poster: "https://image.tmdb.org/t/p/w500/qrGtVFxaD8c7et0jUtaYhyTzzPg.jpg",
-    rating: 8.5,
-    duration: 148,
-    genres: ["Hành động", "Phiêu lưu"],
-    category: "action",
-    status: "now_showing",
+    title: "Godzilla x Kong: Đế Chế Mới",
+    poster: "https://image.tmdb.org/t/p/w500/kUjiRzppdU6kbADoZPHf4kBkqPq.jpg",
+    duration: 135,
+    screen: "Phòng chiếu 4",
   },
   {
     id: 2,
-    title: "The Conjuring 3",
-    poster: "https://image.tmdb.org/t/p/w500/iuFNMS8U5cb6xfzi51Dbkovj7vM.jpg",
-    rating: 7.8,
-    duration: 112,
-    genres: ["Kinh dị", "Bí ẩn"],
-    category: "horror",
-    status: "now_showing",
+    title: "Avatar: Dòng chảy của nước",
+    poster: "https://image.tmdb.org/t/p/w500/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg",
+    duration: 192,
+    screen: "Phòng chiếu 1",
   },
   {
     id: 3,
-    title: "Oppenheimer",
-    poster: "https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg",
-    rating: 9.2,
-    duration: 180,
-    genres: ["Drama", "Lịch sử"],
-    category: "drama",
-    status: "now_showing",
+    title: "Dune: Hành tinh sa mạc",
+    poster: "https://image.tmdb.org/t/p/w500/d5NXSklXo0qyIYkgV94XAgMIckC.jpg",
+    duration: 155,
+    screen: "Phòng chiếu 2",
   },
   {
     id: 4,
-    title: "Barbie",
-    poster: "https://image.tmdb.org/t/p/w500/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg",
-    rating: 8.0,
-    duration: 114,
-    genres: ["Hài", "Phiêu lưu"],
-    category: "comedy",
-    status: "now_showing",
+    title: "Lật Mặt 4",
+    poster: "https://image.tmdb.org/t/p/w500/vJDK7hKX8zGT8Y3sW8vYOERColf.jpg",
+    duration: 110,
+    screen: "Phòng chiếu 3",
   },
   {
     id: 5,
-    title: "Avatar 3",
-    poster: "https://image.tmdb.org/t/p/w500/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg",
-    rating: 9.0,
-    duration: 195,
-    genres: ["Khoa học viễn tưởng", "Hành động"],
-    category: "scifi",
-    status: "coming_soon",
+    title: "Godzilla x Kong: Đế Chế Mới",
+    poster: "https://image.tmdb.org/t/p/w500/kUjiRzppdU6kbADoZPHf4kBkqPq.jpg",
+    duration: 135,
+    screen: "Phòng chiếu 4",
   },
   {
     id: 6,
-    title: "The Notebook",
-    poster: "https://image.tmdb.org/t/p/w500/qNBAXBIQlnOThrVvA6mA2B5ggV6.jpg",
-    rating: 8.7,
-    duration: 123,
-    genres: ["Tình cảm", "Drama"],
-    category: "romance",
-    status: "coming_soon",
+    title: "Avatar: Dòng chảy của nước",
+    poster: "https://image.tmdb.org/t/p/w500/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg",
+    duration: 192,
+    screen: "Phòng chiếu 1",
+  },
+  {
+    id: 7,
+    title: "Dune: Hành tinh sa mạc",
+    poster: "https://image.tmdb.org/t/p/w500/d5NXSklXo0qyIYkgV94XAgMIckC.jpg",
+    duration: 155,
+    screen: "Phòng chiếu 2",
+  },
+  {
+    id: 8,
+    title: "Lật Mặt 4",
+    poster: "https://image.tmdb.org/t/p/w500/vJDK7hKX8zGT8Y3sW8vYOERColf.jpg",
+    duration: 110,
+    screen: "Phòng chiếu 3",
   },
 ];
 
-const categories = [
-  { id: "all", label: "Tất cả" },
-  { id: "action", label: "Hành động" },
-  { id: "comedy", label: "Hài" },
-  { id: "drama", label: "Tâm lý" },
-  { id: "horror", label: "Kinh dị" },
-  { id: "romance", label: "Tình cảm" },
-  { id: "scifi", label: "Khoa học viễn tưởng" },
-];
+const showtimes = ["10:00", "12:30", "15:00", "17:30", "20:00", "22:30"];
 
-/* ===== COMPONENT ===== */
-export default function KioskBooking() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [activeCategory, setActiveCategory] = useState("all");
-
-  // Filter movies
-  const filteredMovies = mockMovies.filter((movie) => {
-    const matchesSearch = movie.title
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const matchesCategory =
-      activeCategory === "all" || movie.category === activeCategory;
-    return matchesSearch && matchesCategory;
+const buildSeats = (): Seat[] => {
+  const list: Seat[] = [];
+  seatingRows.forEach((row) => {
+    for (let i = 1; i <= seatsPerRow; i++) {
+      list.push({
+        id: `${row}${i}`,
+        row,
+        number: i,
+        status: Math.random() < 0.12 ? "booked" : "available",
+      });
+    }
   });
+  return list;
+};
 
-  const nowShowing = filteredMovies.filter((m) => m.status === "now_showing");
-  const comingSoon = filteredMovies.filter((m) => m.status === "coming_soon");
+export default function KioskBooking() {
+  const [selectedMovie, setSelectedMovie] = useState<Movie>(movieList[0]);
+  const [selectedShowtime, setSelectedShowtime] = useState<string>(
+    showtimes[0],
+  );
+  const [seats, setSeats] = useState<Seat[]>(buildSeats());
+  const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
+  const [paymentMethod, setPaymentMethod] = useState<"cash" | "vnpay" | "card">(
+    "cash",
+  );
 
-  const handleBooking = (movie: Movie) => {
-    alert(`Đang chuyển đến trang đặt vé cho: ${movie.title}`);
+  const formattedSeats = useMemo(
+    () =>
+      seatingRows.map((row) => ({
+        row,
+        rowSeats: seats
+          .filter((seat) => seat.row === row)
+          .sort((a, b) => a.number - b.number),
+      })),
+    [seats],
+  );
+
+  const toggleSeat = (seat: Seat) => {
+    if (seat.status === "booked") return;
+    if (seat.status === "selected") {
+      setSelectedSeats((prev) => prev.filter((s) => s.id !== seat.id));
+      setSeats((prev) =>
+        prev.map((s) => (s.id === seat.id ? { ...s, status: "available" } : s)),
+      );
+    } else {
+      setSelectedSeats((prev) => [...prev, { ...seat, status: "selected" }]);
+      setSeats((prev) =>
+        prev.map((s) => (s.id === seat.id ? { ...s, status: "selected" } : s)),
+      );
+    }
+  };
+
+  const totalPrice = selectedSeats.length * seatPrice;
+  const clearSelection = () => {
+    setSelectedSeats([]);
+    setSeats((prev) =>
+      prev.map((seat) =>
+        seat.status === "selected" ? { ...seat, status: "available" } : seat,
+      ),
+    );
+  };
+  const confirmBooking = () => {
+    if (!selectedSeats.length) return;
+    alert(
+      `Đặt thành công ${selectedSeats.length} ghế (${selectedSeats.map((s) => s.id).join(", ")}) - ${selectedMovie.title} [${selectedShowtime}]`,
+    );
+    clearSelection();
   };
 
   return (
     <div className="kiosk-booking">
-      {/* Header */}
-      <div className="kiosk-header">
-        <h1>🎬 Đặt Vé Xem Phim</h1>
-        <p>Chạm để chọn phim yêu thích và đặt vé ngay</p>
-      </div>
+      <header className="top-navbar">
+        <div className="brand">CineGo</div>
+        <div className="search-box">
+          <input placeholder="Tìm phim..." />
+        </div>
+        <div className="pos-title">Bán vé tại quầy</div>
+        <div className="clock">{new Date().toLocaleTimeString()}</div>
+      </header>
 
-      {/* Search Bar */}
-      <div className="search-bar">
-        <input
-          type="text"
-          placeholder="🔍 Tìm kiếm phim..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
-
-      {/* Categories */}
-      <div className="categories">
-        {categories.map((cat) => (
-          <button
-            key={cat.id}
-            className={`category-btn ${
-              activeCategory === cat.id ? "active" : ""
-            }`}
-            onClick={() => setActiveCategory(cat.id)}
-          >
-            {cat.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Now Showing */}
-      {nowShowing.length > 0 && (
-        <div className="movies-section">
-          <h2 className="section-title">🔥 Đang chiếu</h2>
-          <div className="movies-grid">
-            {nowShowing.map((movie) => (
-              <MovieCard key={movie.id} movie={movie} onBook={handleBooking} />
+      <div className="layout-grid">
+        <aside className="left-panel">
+          <h3>Đang chiếu</h3>
+          <div className="movie-list">
+            {movieList.map((movie) => (
+              <button
+                key={movie.id}
+                className={
+                  selectedMovie.id === movie.id
+                    ? "movie-item active"
+                    : "movie-item"
+                }
+                onClick={() => {
+                  setSelectedMovie(movie);
+                  setSelectedShowtime(showtimes[0]);
+                  clearSelection();
+                }}
+              >
+                <img src={movie.poster} alt={movie.title} />
+                <span>{movie.title}</span>
+              </button>
             ))}
           </div>
-        </div>
-      )}
+        </aside>
 
-      {/* Coming Soon */}
-      {comingSoon.length > 0 && (
-        <div className="movies-section">
-          <h2 className="section-title">🎯 Sắp chiếu</h2>
-          <div className="movies-grid">
-            {comingSoon.map((movie) => (
-              <MovieCard key={movie.id} movie={movie} onBook={handleBooking} />
+        <section className="center-panel">
+          <div className="movie-header">
+            <div className="movie-title">{selectedMovie.title}</div>
+            <div className="movie-sub">
+              {selectedMovie.screen} • {selectedMovie.duration} phút
+            </div>
+          </div>
+          <div className="time-select">
+            {showtimes.map((time) => (
+              <button
+                key={time}
+                onClick={() => setSelectedShowtime(time)}
+                className={selectedShowtime === time ? "stime active" : "stime"}
+              >
+                {time}
+              </button>
             ))}
           </div>
-        </div>
-      )}
 
-      {/* Empty State */}
-      {filteredMovies.length === 0 && (
-        <div className="empty-state">
-          <p>Không tìm thấy phim nào</p>
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* ===== MOVIE CARD COMPONENT ===== */
-type MovieCardProps = {
-  movie: Movie;
-  onBook: (movie: Movie) => void;
-};
-
-function MovieCard({ movie, onBook }: MovieCardProps) {
-  return (
-    <div className="movie-card" onClick={() => onBook(movie)}>
-      <div className="movie-poster-wrapper">
-        <img src={movie.poster} alt={movie.title} className="movie-poster" />
-        <div className="movie-overlay">
-          <button className="book-btn">Đặt vé ngay</button>
-        </div>
-      </div>
-      <div className="movie-info">
-        <h3 className="movie-title">{movie.title}</h3>
-        <div className="movie-meta">
-          <span className="rating">⭐ {movie.rating}</span>
-          <span>•</span>
-          <span>{movie.duration} phút</span>
-        </div>
-        <div className="genre-tags">
-          {movie.genres.map((genre) => (
-            <span key={genre} className="genre-tag">
-              {genre}
+          <div className="screen-bar">MÀN HÌNH</div>
+          <div className="legend">
+            <span>
+              <b className="legend-dot available" /> Trống
             </span>
-          ))}
-        </div>
+            <span>
+              <b className="legend-dot selected" /> Đang chọn
+            </span>
+            <span>
+              <b className="legend-dot booked" /> Đã bán
+            </span>
+          </div>
+
+          <div className="seat-map" role="grid">
+            {formattedSeats.map(({ row, rowSeats }) => (
+              <div className="row" key={row}>
+                <div className="row-label">{row}</div>
+                <div className="seats">
+                  {rowSeats.map((seat) => (
+                    <button
+                      key={seat.id}
+                      className={`seat ${seat.status}`}
+                      onClick={() => toggleSeat(seat)}
+                      disabled={seat.status === "booked"}
+                    >
+                      {seat.number}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <aside className="right-panel">
+          <div className="cart-title">
+            <span>Giỏ hàng</span>
+            <span className="cart-count">{selectedSeats.length || 0}</span>
+          </div>
+          <div className="cart-info">
+            <p>
+              <span>Phim:</span> {selectedMovie.title}
+            </p>
+            <p>
+              <span>Phòng:</span> {selectedMovie.screen}
+            </p>
+            <p>
+              <span>Suất:</span> {selectedShowtime}
+            </p>
+            <p>
+              <span>Thời lượng:</span> {selectedMovie.duration} phút
+            </p>
+            <p>
+              <span>Ghế:</span>{" "}
+              {selectedSeats.length
+                ? selectedSeats.map((s) => s.id).join(", ")
+                : "Chưa chọn"}
+            </p>
+            <p>
+              <span>Đơn giá:</span> {seatPrice.toLocaleString()} đ
+            </p>
+            <p className="total">
+              <span>Tổng tiền:</span> {totalPrice.toLocaleString()} đ
+            </p>
+          </div>
+
+          <div className="payment-options">
+            <h4>THANH TOÁN</h4>
+            <div className="pay-methods">
+              <button
+                className={
+                  paymentMethod === "cash" ? "pay-btn active" : "pay-btn"
+                }
+                onClick={() => setPaymentMethod("cash")}
+              >
+                Tiền mặt
+              </button>
+              <button
+                className={
+                  paymentMethod === "vnpay" ? "pay-btn active" : "pay-btn"
+                }
+                onClick={() => setPaymentMethod("vnpay")}
+              >
+                VNPAY
+              </button>
+              <button
+                className={
+                  paymentMethod === "card" ? "pay-btn active" : "pay-btn"
+                }
+                onClick={() => setPaymentMethod("card")}
+              >
+                Thẻ
+              </button>
+            </div>
+            {paymentMethod === "vnpay" && (
+              // <div className="qr-code-label">QR Code</div>
+              <img
+                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVA5fFqneWXtMAlI6yueCG4078s5pvmvzaPg&s"
+                alt="VNPAY QR Code"
+                className="qr-code"
+              />
+            )}
+          </div>
+
+          <div className="cart-actions">
+            <button className="btn-clear" onClick={clearSelection}>
+              Xóa chọn
+            </button>
+            <button
+              className="btn-confirm"
+              onClick={confirmBooking}
+              disabled={!selectedSeats.length}
+            >
+              Xác nhận bán vé
+            </button>
+          </div>
+        </aside>
       </div>
     </div>
   );

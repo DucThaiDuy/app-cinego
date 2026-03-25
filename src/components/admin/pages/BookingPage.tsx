@@ -7,6 +7,7 @@ import BorderColorIcon from "@mui/icons-material/BorderColor";
 import QrCodeIcon from "@mui/icons-material/QrCode";
 import Pagination from "../../UI/Pagination";
 import { useNavigate } from "react-router-dom";
+import { ROUTES } from "../../../constants/routes";
 import "./BookingPage.scss";
 import PageHeader from "../../UI/PageHearder/PageHeader";
 import { BookingResponse } from "../../../api/types/response/BookingResponse";
@@ -66,10 +67,11 @@ export default function BookingPage() {
 
   // Checkin
   const handleCheckin = (id: number) => {
-    // setBookings((prev) =>
-    //   prev.map((b) => (b.id === id ? { ...b, status: BookingStatus.USED } : b))
-    // );
-    message.info(`Chuyển đến Checkin Auto #${id}`);
+    // chuyển hướng đến trang checkin auto với id tùy chọn
+    navigate(
+      `${ROUTES.MANAGER.BASE}/${ROUTES.MANAGER.ADD_BOOKING_AUTOCHECKIN}`
+    );
+    message.info(`Đang chuyển đến Checkin Auto #${id}`);
   };
 
   const handleDelete = (id: number) => {
@@ -129,7 +131,10 @@ export default function BookingPage() {
         action={
           <button
             className="btn-add"
-            onClick={() => navigate("/admin/bookings/auto-checkin")}
+            onClick={() =>
+              // use ROUTES constants to build correct full path including prefix
+              navigate(`${ROUTES.MANAGER.BASE}/${ROUTES.MANAGER.ADD_BOOKING_AUTOCHECKIN}`)
+            }
           >
             <QrCodeIcon /> Checkin Auto
           </button>

@@ -37,4 +37,8 @@ export const ROUTES = {
     ADMIN: "/cinego/super-admin",
     MANAGER: "/cinego/admin",
   },
+
+  POS_COUNTER: {
+    BASE: "/cinego/pos-counter",
+  },
 };

@@ -7,12 +7,12 @@
   border: none;
   cursor: pointer;
 
-  background: linear-gradient(135deg, #e50914, #b20710);
+  background: linear-gradient(135deg, #e11d48, #a81850);
   color: #fff;
   font-weight: 700;
   font-size: 15px;
 
-  box-shadow: 0 12px 35px rgba(229, 9, 20, 0.45);
+  box-shadow: 0 12px 35px rgba(225, 29, 72, 0.45);
   transition: all 0.3s ease;
 
   .icon {
@@ -22,7 +22,7 @@
   }
 
   &:hover {
-    box-shadow: 0 16px 45px rgba(229, 9, 20, 0.7);
+    box-shadow: 0 16px 45px rgba(225, 29, 72, 0.7);
     transform: translateY(-2px);
 
     .icon {
@@ -32,6 +32,6 @@
 
   &:active {
     transform: translateY(0);
-    box-shadow: 0 8px 20px rgba(229, 9, 20, 0.5);
+    box-shadow: 0 8px 20px rgba(225, 29, 72, 0.5);
   }
 }

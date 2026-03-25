@@ -77,6 +77,7 @@ export default function Header({ toggleSidebar }: HeaderProps) {
           ☰
         </button>
         <span className="admin-header__title">Admin Dashboard</span>
+        <span className="admin-header__title">Chúc mừng năm mới</span>
       </div>
 
       <div className="admin-header__right">

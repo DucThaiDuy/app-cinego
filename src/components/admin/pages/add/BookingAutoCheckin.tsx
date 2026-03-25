@@ -62,6 +62,64 @@ export default function BookingAutoCheckin() {
   const codeReaderRef = useRef<BrowserMultiFormatReader | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
+  // Hàm phát âm thanh feedback
+  const playSound = (type: 'success' | 'error') => {
+    try {
+      // Kiểm tra hỗ trợ Web Audio API
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContext) {
+        console.warn('Web Audio API không được hỗ trợ trên trình duyệt này');
+        return;
+      }
+
+      const context = new AudioContext();
+      
+      // Resume context nếu cần (cho Chrome)
+      if (context.state === 'suspended') {
+        context.resume();
+      }
+
+      const oscillator = context.createOscillator();
+      const gainNode = context.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(context.destination);
+      
+      if (type === 'success') {
+        // Âm thanh thành công
+        oscillator.frequency.setValueAtTime(800, context.currentTime);
+        oscillator.frequency.setValueAtTime(1000, context.currentTime + 0.1);
+        gainNode.gain.setValueAtTime(0.3, context.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.3);
+        
+        oscillator.start(context.currentTime);
+        oscillator.stop(context.currentTime + 0.3);
+      } else {
+        // Âm thanh lỗi
+        oscillator.frequency.setValueAtTime(300, context.currentTime);
+        gainNode.gain.setValueAtTime(0.3, context.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.5);
+        
+        oscillator.start(context.currentTime);
+        oscillator.stop(context.currentTime + 0.5);
+      }
+    } catch (error) {
+      console.warn('Không thể phát âm thanh:', error);
+      // Fallback: thử dùng Audio element
+      try {
+        const audio = new Audio();
+        if (type === 'success') {
+          // Có thể thêm file âm thanh thực tế ở đây
+          console.log('✅ Check-in thành công!');
+        } else {
+          console.log('❌ Lỗi check-in!');
+        }
+      } catch (fallbackError) {
+        console.warn('Fallback audio cũng thất bại:', fallbackError);
+      }
+    }
+  };
+
   // Yêu cầu quyền camera
   const requestCameraPermission = async () => {
     try {
@@ -78,7 +136,7 @@ export default function BookingAutoCheckin() {
 
       if (error.name === "NotAllowedError") {
         setErrorMsg(
-          "❌ Vui lòng cho phép truy cập camera trong cài đặt trình duyệt!"
+          "❌ Vui lòng cho phép truy cập camera trong cài đặt trình duyệt!",
         );
       } else if (error.name === "NotFoundError") {
         setErrorMsg("❌ Không tìm thấy camera trên thiết bị!");
@@ -117,17 +175,38 @@ export default function BookingAutoCheckin() {
         videoRef.current,
         (result, err) => {
           if (result) {
-            const data = result.getText();
-            console.log("QR scanned:", data);
+            try {
+              const data = result.getText();
+              console.log("QR scanned:", data);
 
-            const found = bookings.find(
-              (b) => b.booking_code.toLowerCase() === data.toLowerCase()
-            );
+              if (!data || data.trim() === '') {
+                setErrorMsg("❌ Mã QR trống hoặc không hợp lệ!");
+                playSound("error");
+                return;
+              }
 
-            if (found) {
-              if (found.status === BookingStatus.USED) {
-                setErrorMsg("⚠️ Booking đã check-in trước đó!");
-              } else {
+              const found = bookings.find(
+                (b) => b.booking_code.toLowerCase() === data.toLowerCase(),
+              );
+
+              if (found) {
+                // Kiểm tra trạng thái hiện tại
+                if (found.status === BookingStatus.USED) {
+                  setErrorMsg("⚠️ Booking đã check-in trước đó!");
+                  setScannedBooking(found);
+                  playSound("error");
+                  return;
+                }
+
+                // Chỉ cho phép check-in booking đã thanh toán
+                if (found.status !== BookingStatus.PAID) {
+                  setErrorMsg("⚠️ Chỉ có thể check-in booking đã thanh toán!");
+                  setScannedBooking(found);
+                  playSound("error");
+                  return;
+                }
+
+                // Cập nhật booking thành USED
                 setBookings((prev) =>
                   prev.map((b) =>
                     b.id === found.id
@@ -135,21 +214,36 @@ export default function BookingAutoCheckin() {
                           ...b,
                           status: BookingStatus.USED,
                           checked_in_at: new Date().toISOString(),
+                          checked_in_by: undefined, // Có thể thêm ID của nhân viên check-in sau
                         }
                       : b
                   )
                 );
+                setScannedBooking(found);
                 setErrorMsg("");
+
+                // Phát âm thanh thành công
+                playSound("success");
+
+                // Tự động dừng quét sau 3 giây
+                setTimeout(() => {
+                  stopScanning();
+                }, 3000);
+              } else {
+                setScannedBooking(null);
+                setErrorMsg("❌ Mã booking không tồn tại!");
+                playSound("error");
               }
-              setScannedBooking(found);
-            } else {
-              setScannedBooking(null);
-              setErrorMsg("❌ Mã booking không tồn tại!");
+            } catch (processingError) {
+              console.error("Error processing QR result:", processingError);
+              setErrorMsg("❌ Lỗi xử lý mã QR!");
+              playSound("error");
             }
           } else if (err && err.name !== "NotFoundException") {
             console.error("QR scan error:", err);
+            // Không hiển thị lỗi cho người dùng vì đây là lỗi thường xuyên khi không tìm thấy QR
           }
-        }
+        },
       );
     } catch (error: any) {
       console.error("Start scanning error:", error);
@@ -182,6 +276,23 @@ export default function BookingAutoCheckin() {
     };
   }, []);
 
+  // Cleanup khi component unmount hoặc khi dependencies thay đổi
+  useEffect(() => {
+    const cleanup = () => {
+      if (codeReaderRef.current) {
+        try {
+          // BrowserMultiFormatReader không có method reset, chỉ cần set null
+          codeReaderRef.current = null;
+        } catch (error) {
+          console.warn("Error cleaning up code reader:", error);
+        }
+      }
+      stopScanning();
+    };
+
+    return cleanup;
+  }, []);
+
   return (
     <div className="checkin-page">
       <PageHeader
@@ -192,14 +303,18 @@ export default function BookingAutoCheckin() {
           // { label: "Lịch chiếu", path: "/admin/showtimes" },
           { label: "Checkin Auto" },
         ]}
-        // action={
-        //   <button
-        //     className="btn-add"
-        //     onClick={() => navigate("/admin/bookings/auto-checkin")}
-        //   >
-        //     <QrCodeIcon /> Checkin Auto
-        //   </button>
-        // }
+        action={
+          <button
+            className="btn-add"
+            onClick={() => {
+              setBookings(initialBookings);
+              setScannedBooking(null);
+              setErrorMsg("");
+            }}
+          >
+            🔄 Reset Test Data
+          </button>
+        }
       />
       <div className="checkin-header">
         <h1>📱 Check-in tự động bằng QR</h1>
@@ -284,6 +399,15 @@ export default function BookingAutoCheckin() {
                 {scannedBooking.total_amount.toLocaleString("vi-VN")} ₫
               </span>
             </div>
+
+            {scannedBooking.checked_in_at && (
+              <div className="detail-row success">
+                <span className="label">Check-in lúc:</span>
+                <span className="value">
+                  {new Date(scannedBooking.checked_in_at).toLocaleString("vi-VN")}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -37,6 +37,16 @@ function App() {
     <Routes>
       <Route index element={<Navigate to={ROUTES.CLIENT.LOGIN} replace />} />
       <Route path={ROUTES.CLIENT.LOGIN} element={<LoginAdmin />} />
+      {/* redirect legacy admin path to new base path */}
+      <Route
+        path="/admin/bookings/auto-checkin"
+        element={
+          <Navigate
+            to={`${ROUTES.MANAGER.BASE}/${ROUTES.MANAGER.ADD_BOOKING_AUTOCHECKIN}`}
+            replace
+          />
+        }
+      />
       {/* CLIENT */}
       <Route element={<ClientLayout />}>
         <Route path="/" element={<Home />} />
@@ -63,7 +73,7 @@ function App() {
 
         {/* Add */}
         <Route path={ROUTES.MANAGER.ADD_MOVIE} element={<AddMovie />} />
-        <Route path={ROUTES.MANAGER.SHOWTIMES} element={<AddShowtime />} />
+        <Route path={ROUTES.MANAGER.ADD_SHOWTIME} element={<AddShowtime />} />
         <Route path={ROUTES.MANAGER.ADD_CINEMA} element={<AddCinema />} />
         <Route
           path={ROUTES.MANAGER.ADD_BOOKING_AUTOCHECKIN}
@@ -89,12 +99,29 @@ function App() {
         {/* <Route path={ROUTES.SUPER_ADMIN.SETTINGS} element={<SettingsPage />} /> */}
       </Route>
 
-      {/* Booking CountTer */}
+      {/* Booking Counter */}
       <Route path="/booking" element={<BookingLayout />}>
+        <Route index element={<Navigate to="home" replace />} />
         <Route path="home" element={<BookingCounter />} />
         <Route path="ticket-booking" element={<TicketBooking />} />
-        {/* TicketBooking */}
       </Route>
+
+      {/* POS counter */}
+      <Route path={ROUTES.POS_COUNTER.BASE} element={<BookingLayout />}>
+        <Route index element={<BookingCounter />} />
+        <Route path="home" element={<BookingCounter />} />
+        <Route path="ticket-booking" element={<TicketBooking />} />
+      </Route>
+
+      {/* Direct POS paths */}
+      <Route
+        path={`${ROUTES.POS_COUNTER.BASE}/home`}
+        element={<BookingCounter />}
+      />
+      <Route
+        path={`${ROUTES.POS_COUNTER.BASE}/ticket-booking`}
+        element={<TicketBooking />}
+      />
     </Routes>
   );
 }

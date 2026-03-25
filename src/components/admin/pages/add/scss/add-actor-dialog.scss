@@ -45,16 +45,25 @@
     }
 
     .btn-submit {
-      background: #1d4ed8;
+      background: linear-gradient(135deg, #e11d48, #a81850);
       color: #ffffff;
       padding: 0.5rem 1rem;
       border-radius: 0.5rem;
       cursor: pointer;
       border: none;
       font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(225, 29, 72, 0.2);
 
       &:hover {
-        opacity: 0.9;
+        background: linear-gradient(135deg, #d11b42, #9a1645);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3);
+      }
+
+      &:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 8px rgba(225, 29, 72, 0.2);
       }
     }
   }

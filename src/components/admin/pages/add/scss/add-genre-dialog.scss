@@ -76,13 +76,20 @@
     }
 
     .btn-submit {
-      background: var(--primary);
+      background: linear-gradient(135deg, var(--primary), #a81850);
       color: var(--bg);
+      box-shadow: 0 2px 4px rgba(225, 29, 72, 0.2);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
       &:hover {
-        opacity: 0.85;
+        background: linear-gradient(135deg, #d11b42, #9a1645);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(225, 29, 72, 0.3);
       }
+
       &:active {
-        transform: scale(0.98);
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(225, 29, 72, 0.2);
       }
     }
   }

@@ -1,0 +1,55 @@
+# CineGo - Giới thiệu Dự án
+
+## 🎬 Tổng quan
+**CineGo** là ứng dụng **web đặt vé xem phim và quản lý rạp chiếu** hiện đại, hỗ trợ nhiều vai trò:
+- **Khách hàng**: Xem phim, đặt vé, quản lý vé, đánh giá
+- **Manager**: Quản lý phim, thể loại, diễn viên, lịch chiếu, đặt chỗ, rạp
+- **Admin**: Dashboard, quản lý người dùng, rạp chiếu
+
+**Mục tiêu**: Nền tảng SaaS quản lý rạp chiếu hoàn chỉnh, tập trung thị trường Việt Nam.
+
+## 🛠️ Công nghệ
+- **Frontend**: React 19 + TypeScript + Vite
+- **UI**: Material-UI, SCSS, Lucide Icons
+- **Routing**: React Router + RoleGuard (ADMIN/MANAGER)
+- **API**: Axios services (movie/booking/cinema/auth)
+- **i18n**: Tiếng Việt + Tiếng Anh
+- **Khác**: Google Login, QR Scanner, Datepicker
+
+## 📁 Cấu trúc Dự án
+```
+src/
+├── api/          # Services + Models (Movie, Booking...)
+├── components/   # UI: admin/, Booking_Counter/, home/
+├── constants/    # Routes, RoleGuard
+└── i18n/         # vi.json, en.json
+```
+
+## 🚀 Tính năng Chính
+**Khách hàng**:
+- Duyệt phim (đang chiếu/sắp chiếu), tìm kiếm/lọc
+- Đặt vé: Chọn rạp→ngày→ghế→thanh toán→QR vé điện tử
+- Tài khoản: Đăng ký/Login Google, lịch sử vé
+
+**Manager (/cinego/admin)**: CRUD Phim/Thể loại/Diễn viên/Lịch chiếu/Đặt chỗ
+**Admin (/cinego/super-admin)**: Dashboard + Quản lý User/Rạp
+**Kiosk (/cinego/pos-counter)**: Đặt vé tự động
+
+## 🗺️ Routes
+```
+CLIENT: /
+MANAGER: /cinego/admin/movies...
+ADMIN: /cinego/super-admin/dashboard
+POS: /cinego/pos-counter
+```
+
+## Chạy dự án
+```
+npm install
+npm run dev  → http://localhost:5173
+```
+
+**Chi tiết**: Xem README.md (spec đầy đủ 50+ tính năng).
+
+Dự án đang phát triển → Kết nối backend + hoàn thiện CRUD/payment.
+
