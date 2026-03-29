@@ -1,0 +1,178 @@
+$primary-color: #2196f3;
+$danger-color: #f44336;
+$success-color: #4caf50;
+$warning-color: #ff9800;
+$text-primary: #333;
+$bg-primary: #fff;
+$bg-secondary: #f5f5f5;
+$border-color: #eee;
+
+.hall-page {
+  padding: 24px;
+  background-color: $bg-secondary;
+  min-height: calc(100vh - 64px);
+
+  .filters {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    background: $bg-primary;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+    input, select {
+      padding: 8px 16px;
+      border: 1px solid $border-color;
+      border-radius: 4px;
+      outline: none;
+      min-width: 200px;
+      
+      &:focus {
+        border-color: $primary-color;
+      }
+    }
+  }
+
+  .hall-table {
+    background: $bg-primary;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+    margin-bottom: 24px;
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+
+      th, td {
+        padding: 16px;
+        text-align: left;
+        border-bottom: 1px solid $border-color;
+      }
+
+      th {
+        background-color: #fafafa;
+        font-weight: 500;
+        color: #666;
+      }
+
+      td {
+        color: $text-primary;
+
+        &.name {
+          font-weight: 500;
+        }
+
+        &.actions {
+          display: flex;
+          gap: 8px;
+        }
+      }
+
+      .status {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        background: #e0e0e0;
+        color: #666;
+
+        &.ACTIVE { background: #e8f5e9; color: $success-color; }
+        &.INACTIVE { background: #ffebee; color: $danger-color; }
+        &.MAINTENANCE { background: #fff3e0; color: $warning-color; }
+      }
+
+      .empty {
+        text-align: center;
+        color: #999;
+        padding: 48px;
+      }
+    }
+  }
+
+  /* Modal Form Variables */
+  .hall-modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .hall-modal {
+    background: white;
+    padding: 24px;
+    border-radius: 8px;
+    width: 600px;
+    max-width: 90vw;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+    h2 {
+      margin: 0 0 20px 0;
+      font-size: 1.5rem;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+
+        label {
+          font-weight: 500;
+          font-size: 0.9rem;
+        }
+
+        input[type="text"], input[type="number"], select {
+          padding: 8px 12px;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+        }
+        
+        input[type="file"] {
+          padding: 6px 0;
+        }
+      }
+
+      .form-row {
+        display: flex;
+        gap: 16px;
+        .form-group {
+          flex: 1;
+        }
+      }
+
+      .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 10px;
+
+        button {
+          padding: 8px 16px;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-weight: 500;
+
+          &.btn-cancel {
+            background: #eee;
+            color: #333;
+          }
+
+          &.btn-submit {
+            background: $primary-color;
+            color: white;
+          }
+        }
+      }
+    }
+  }
+}

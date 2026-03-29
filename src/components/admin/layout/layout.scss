@@ -1,11 +1,11 @@
 /* ===== VARIABLES ===== */
-$bg-body: #f8fafc;
-$bg-card: #ffffff;
-$bg-hover: #f1f5f9;
-$border: #e5e7eb;
-$primary: #e11d48;
-$text-main: #0f172a;
-$text-muted: #64748b;
+$bg-body: #09090b;
+$bg-card: #111113;
+$bg-hover: #1a1a1f;
+$border: #2b2b31;
+$primary: #dc2626;
+$text-main: #f3f4f6;
+$text-muted: #a1a1aa;
 
 /* ===== RESET ===== */
 html,
@@ -28,7 +28,9 @@ body {
 .admin-layout {
   display: flex;
   height: 100vh;
-  background: $bg-body;
+  background:
+    radial-gradient(circle at top right, rgba($primary, 0.14), transparent 40%),
+    $bg-body;
 
   &.sidebar-open {
     .admin-main {
@@ -57,7 +59,7 @@ body {
   height: 100vh;
   position: fixed;
   inset: 0 auto 0 0;
-  background: $bg-card;
+  background: linear-gradient(180deg, #121214 0%, #0c0c0e 100%);
   border-right: 1px solid $border;
   display: flex;
   flex-direction: column;
@@ -72,6 +74,7 @@ body {
     font-weight: 600;
     color: $primary;
     border-bottom: 1px solid $border;
+    background: rgba($primary, 0.08);
   }
 
   &__menu {
@@ -99,9 +102,10 @@ body {
     }
 
     &.active {
-      background: rgba($primary, 0.12);
-      color: $primary;
+      background: rgba($primary, 0.2);
+      color: #fca5a5;
       font-weight: 600;
+      border: 1px solid rgba($primary, 0.28);
     }
   }
 
@@ -144,7 +148,7 @@ body {
 
 .admin-header {
   height: 40px;
-  background: $bg-card;
+  background: #111113;
   border-bottom: 1px solid $border;
   padding: 0 16px;
   display: flex;
@@ -158,15 +162,21 @@ body {
   }
 
   &__toggle {
-    background: none;
-    border: none;
+    background: rgba($primary, 0.14);
+    border: 1px solid rgba($primary, 0.24);
+    border-radius: 6px;
+    color: #fecaca;
     font-size: 20px;
+    line-height: 1;
+    width: 34px;
+    height: 28px;
     cursor: pointer;
   }
 
   &__title {
     font-size: 16px;
     font-weight: 600;
+    color: $text-main;
   }
 }
 
@@ -175,7 +185,8 @@ body {
   flex: 1;
   padding: 20px;
   overflow-y: auto;
-  background: #fff;
+  background: #0b0b0d;
+  color: $text-main;
 }
 
 //User dropdown
@@ -189,7 +200,7 @@ body {
   transition: 0.2s;
 
   &:hover {
-    background: rgba(0, 0, 0, 0.05);
+    background: rgba($primary, 0.12);
   }
 
   img {
@@ -197,12 +208,13 @@ body {
     height: 36px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid $border;
+    border: 2px solid rgba($primary, 0.35);
   }
 
   span {
     font-size: 15px;
     font-weight: 500;
+    color: $text-main;
   }
 
   .dropdown-arrow {
@@ -218,7 +230,7 @@ body {
   right: 0;
   top: calc(100% + 8px);
   min-width: 220px;
-  background: #fff;
+  background: #151518;
   border: 1px solid $border;
   border-radius: 8px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
@@ -256,10 +268,10 @@ body {
   }
 
   &.logout {
-    color: #ef4444;
+    color: #f87171;
 
     &:hover {
-      background: rgba(239, 68, 68, 0.1);
+      background: rgba($primary, 0.2);
     }
   }
 }

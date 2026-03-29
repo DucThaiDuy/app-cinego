@@ -8,6 +8,7 @@ import GenreManagement from "./components/admin/pages/GenreManagement";
 import ActorManagement from "./components/admin/pages/ActorManagement";
 import ShowtimeManagement from "./components/admin/pages/ShowtimeManagement";
 import CinemaManagement from "./components/admin/pages/CinemaManagement";
+import HallManagement from "./components/admin/pages/HallManagement";
 import BookingPage from "./components/admin/pages/BookingPage";
 import UserManagementPage from "./components/admin/pages/UserManagementPage";
 
@@ -49,7 +50,7 @@ function App() {
       />
       {/* CLIENT */}
       <Route element={<ClientLayout />}>
-        <Route path="/" element={<Home />} />
+        <Route path="/home" element={<Home />} />
       </Route>
 
       {/* ADMIN */}
@@ -96,6 +97,7 @@ function App() {
         <Route path={ROUTES.ADMIN.DASHBOARD} element={<Dashboard />} />
         <Route path={ROUTES.ADMIN.USERS} element={<UserManagementPage />} />
         <Route path={ROUTES.ADMIN.CINEMAS} element={<CinemaManagement />} />
+        <Route path={ROUTES.ADMIN.HALLS} element={<HallManagement />} />
         {/* <Route path={ROUTES.SUPER_ADMIN.SETTINGS} element={<SettingsPage />} /> */}
       </Route>
 

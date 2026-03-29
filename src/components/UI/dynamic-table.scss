@@ -1,16 +1,24 @@
+@use "../../styles/admin-theme.scss";
+
 .dynamic-table {
   width: 100%;
   font-family: sans-serif;
   border-collapse: collapse;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-md);
+  overflow: hidden;
+  background: var(--admin-bg-elevated);
+  color: var(--admin-text);
 
   .table-head {
     display: flex;
-    background: #f1f5f9;
+    background: var(--admin-bg-soft);
     font-weight: 600;
     cursor: default;
 
     span {
       padding: 10px;
+      color: var(--admin-text);
       user-select: none;
       flex-shrink: 0;
       overflow: hidden;
@@ -21,7 +29,7 @@
         cursor: pointer;
 
         &:hover {
-          background: #e2e8f0;
+          background: rgba(220, 38, 38, 0.18);
         }
       }
     }
@@ -33,11 +41,12 @@
 
   .table-row {
     display: flex;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--admin-border);
     align-items: center;
 
     span {
       padding: 10px;
+      color: var(--admin-text);
       flex-shrink: 0;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -45,11 +54,11 @@
     }
 
     &:nth-child(even) {
-      background: #f9fafb;
+      background: #101014;
     }
 
     &:hover {
-      background: #e2e8f0;
+      background: rgba(220, 38, 38, 0.1);
     }
   }
 }

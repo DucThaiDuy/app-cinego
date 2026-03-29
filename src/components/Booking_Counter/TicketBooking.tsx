@@ -1,5 +1,5 @@
 // TicketBooking.tsx
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import "./TicketBooking.scss";
 
 type Seat = {
@@ -36,17 +36,29 @@ export default function TicketBooking() {
   const [selectedFormat, setSelectedFormat] = useState<string>("2D");
   const [selectedShowtime, setSelectedShowtime] = useState<string>("10:00");
 
+  const availableSeats = useMemo(
+    () => seats.filter((s) => s.status === "available").length,
+    [seats],
+  );
+  const bookedSeats = useMemo(
+    () => seats.filter((s) => s.status === "booked").length,
+    [seats],
+  );
+  const totalSeats = seats.length;
+
   const toggleSeat = (seat: Seat) => {
     if (seat.status === "booked") return;
     if (seat.status === "selected") {
       setSelectedSeats(selectedSeats.filter((s) => s.id !== seat.id));
       setSeats(
-        seats.map((s) => (s.id === seat.id ? { ...s, status: "available" } : s))
+        seats.map((s) =>
+          s.id === seat.id ? { ...s, status: "available" } : s,
+        ),
       );
     } else {
       setSelectedSeats([...selectedSeats, { ...seat, status: "selected" }]);
       setSeats(
-        seats.map((s) => (s.id === seat.id ? { ...s, status: "selected" } : s))
+        seats.map((s) => (s.id === seat.id ? { ...s, status: "selected" } : s)),
       );
     }
   };
@@ -108,6 +120,19 @@ export default function TicketBooking() {
       {/* SEAT SELECTION */}
       <div className="seat-selection">
         <h2>Chọn ghế</h2>
+        <div className="legend">
+          <span>
+            <b className="legend-dot available" /> Trống: {availableSeats}
+          </span>
+          <span>
+            <b className="legend-dot selected" /> Đã chọn:{" "}
+            {selectedSeats.length}
+          </span>
+          <span>
+            <b className="legend-dot booked" /> Đã bán: {bookedSeats}
+          </span>
+          <span className="legend-total">Tổng: {totalSeats} ghế</span>
+        </div>
         <div className="screen">MÀN HÌNH</div>
         <div className="seats-grid">
           {seats.map((seat) => (
@@ -115,6 +140,7 @@ export default function TicketBooking() {
               key={seat.id}
               className={`seat ${seat.status}`}
               onClick={() => toggleSeat(seat)}
+              title={`Ghế: ${seat.id}\nGiá: 100.000đ\nLoại: Thường`}
             >
               {seat.id}
             </div>

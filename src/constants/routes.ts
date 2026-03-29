@@ -29,6 +29,7 @@ export const ROUTES = {
     DASHBOARD: "dashboard",
     USERS: "users",
     CINEMAS: "cinemas",
+    HALLS: "halls",
     SETTINGS: "settings",
   },
 

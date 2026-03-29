@@ -41,6 +41,10 @@ export default function Sidebar({ isOpen, basePath, role }: SidebarProps) {
               label="Rạp phim"
             />
             <NavItem
+              to={`${basePath}/${ROUTES.ADMIN.HALLS}`}
+              label="Phòng chiếu"
+            />
+            <NavItem
               to={`${basePath}/${ROUTES.ADMIN.USERS}`}
               label="Người dùng"
             />

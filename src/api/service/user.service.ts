@@ -12,6 +12,7 @@ export const adminUserService = {
   // ================= FETCH USERS =================
   fetchUsers: async (
     pagination: PaginationRequest,
+    filters?: { code?: string; phone?: string; fullName?: string; email?: string }
   ): Promise<PaginatedResponse<User>> => {
     const pageIndex = Math.max((pagination.page ?? 1) - 1, 0);
 
@@ -19,8 +20,13 @@ export const adminUserService = {
       page: String(pageIndex),
       size: String(pagination.limit ?? 10),
     });
+
+    if (filters?.code) params.append("code", filters.code);
+    if (filters?.phone) params.append("phone", filters.phone);
+    if (filters?.fullName) params.append("fullName", filters.fullName);
+    if (filters?.email) params.append("email", filters.email);
+
     const response = await service<ApiResponse<PaginatedResponse<User>>>({
-      // url: `/admin/users?${params.toString()}`,
       url: API.ADMIN.USERS + `?${params.toString()}`,
       method: "GET",
     });
@@ -44,4 +50,6 @@ export const adminUserService = {
       method: "DELETE",
     });
   },
+
+
 };

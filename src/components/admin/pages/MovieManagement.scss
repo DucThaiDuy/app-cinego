@@ -3,7 +3,7 @@
 /* ===============================
    VARIABLES
 ================================ */
-:root {
+.admin-content {
   --primary: #000000;
   --success: #10b981;
   --danger: #ef4444;
@@ -324,7 +324,7 @@
    DARK MODE
 ================================ */
 @media (prefers-color-scheme: dark) {
-  :root {
+.admin-content {
     --primary: #ffffff;
     --bg: #111827;
     --bg-soft: #1f2937;

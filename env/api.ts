@@ -13,5 +13,6 @@ export const API = {
     SHOWTIMES: `${API_BASE.ADMIN}/showtimes`,
     CINEMAS: `${API_BASE.ADMIN}/cinemas`,
     BOOKINGS: `${API_BASE.ADMIN}/bookings`,
+    HALLS: `${API_BASE.ADMIN}/halls`,
   },
 };

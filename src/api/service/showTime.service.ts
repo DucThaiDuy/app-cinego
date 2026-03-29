@@ -44,6 +44,29 @@ export const adminShowTimeService = {
     return response.data;
   },
 
+  // ================= GET BY MOVIE ID =================
+  getByMovieId: async (
+    movieId: number,
+    pagination?: PaginationRequest,
+  ): Promise<PaginatedResponse<ShowTimeResponse>> => {
+    const pageIndex = Math.max((pagination?.page ?? 1) - 1, 0);
+    const pageSize = pagination?.limit ?? 100;
+
+    const params = new URLSearchParams({
+      page: String(pageIndex),
+      size: String(pageSize),
+    });
+
+    const response = await service<
+      ApiResponse<PaginatedResponse<ShowTimeResponse>>
+    >({
+      url: `${API.ADMIN.SHOWTIMES}/movie/${movieId}?${params.toString()}`,
+      method: "GET",
+    });
+
+    return response.data;
+  },
+
   // ================= TOGGLE STATUS =================
   toggleStatus: async (id: number): Promise<void> => {
     await service<void>({
