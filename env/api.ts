@@ -4,6 +4,7 @@ export const API = {
   PUBLIC: {
     MOVIES: `${API_BASE.PUBLIC}/movies`,
     USERS: `${API_BASE.PUBLIC}/users`,
+    SHOWTIMES: `${API_BASE.PUBLIC}/showtimes`,
   },
   ADMIN: {
     MOVIES: `${API_BASE.ADMIN}/movies`,

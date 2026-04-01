@@ -176,7 +176,7 @@ export default function ShowtimeManagement() {
                 <td>{s.time}</td>
                 <td className="format">{s.format}</td>
                 <td>{s.language === "subtitle" ? "Phụ đề" : "Lồng tiếng"}</td>
-                <td>{s.availableSeats}</td>
+                <td>{s.available_seats}</td>
                 <td>
                   <span className={`status ${s.status}`}>{s.status}</span>
                 </td>

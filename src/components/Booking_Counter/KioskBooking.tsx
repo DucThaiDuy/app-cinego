@@ -392,111 +392,53 @@ export default function KioskBooking() {
             <div className="movie-sub">
               {selectedMovie?.rating}⭐ • {selectedMovie?.durationMinutes} phút
             </div>
-            <p style={{ fontSize: "0.8rem", color: "lime" }}>
-              Debug: selectedMovie.id = {selectedMovie?.id} (type:{" "}
-              {typeof selectedMovie?.id})
-            </p>
           </div>
 
-          <p>
-            Debug: selectedMovie ={" "}
-            {selectedMovie ? selectedMovie.title : "null"}
-          </p>
-
           <div className="date-select">
-            <h4>Chọn ngày:</h4>
-            <p style={{ fontSize: "0.8rem", color: "yellow" }}>
-              Debug: availableDates.length = {availableDates.length}
-            </p>
-            {availableDates.length === 0 && (
-              <p style={{ fontSize: "0.8rem", color: "red" }}>
-                Chưa có ngày chiếu (đang load...)
-              </p>
-            )}
+            <h4>Chọn ngày chiếu</h4>
             <div className="date-buttons">
-              {availableDates.length > 0 ? (
-                availableDates.map((dateInfo, index) => (
-                  <div
-                    key={dateInfo.date}
-                    style={{
-                      margin: "5px",
-                      padding: "5px",
-                      border: "1px solid yellow",
-                    }}
-                  >
-                    <button
-                      onClick={() => {
-                        console.log("Date clicked:", dateInfo);
-                        setSelectedDate(dateInfo.date);
-                        // Auto-select first showtime of this date
-                        const firstShowtime = showtimes.find(
-                          (st) => st.date === dateInfo.date,
-                        );
-                        setSelectedShowtime(firstShowtime || null);
-                        clearSelection();
-                      }}
-                      className={
-                        selectedDate === dateInfo.date
-                          ? "date-btn active"
-                          : "date-btn"
-                      }
-                    >
-                      {dateInfo.display}
-                    </button>
-                    <span
-                      style={{
-                        fontSize: "0.8rem",
-                        color: "gray",
-                        marginLeft: "5px",
-                      }}
-                    >
-                      ({dateInfo.date})
-                    </span>
-                  </div>
-                ))
-              ) : (
-                <div
-                  style={{ padding: "10px", background: "red", color: "white" }}
+              {availableDates.map((dateInfo) => (
+                <button
+                  key={dateInfo.date}
+                  onClick={() => {
+                    setSelectedDate(dateInfo.date);
+                    const firstShowtime = showtimes.find((st) => st.date === dateInfo.date);
+                    setSelectedShowtime(firstShowtime || null);
+                    clearSelection();
+                  }}
+                  className={selectedDate === dateInfo.date ? "date-btn active" : "date-btn"}
                 >
-                  No dates available - Check console logs
-                </div>
-              )}
+                  {dateInfo.display}
+                </button>
+              ))}
             </div>
           </div>
 
           <div className="time-select">
-            <h4>Chọn giờ:</h4>
-            <p style={{ fontSize: "0.8rem", color: "cyan" }}>
-              Debug: showtimes for {selectedDate}:{" "}
-              {showtimes.filter((st) => st.date === selectedDate).length} items
-            </p>
-            {showtimes
-              .filter((st) => st.date === selectedDate)
-              .sort((a, b) => {
-                const timeA = a.time || "";
-                const timeB = b.time || "";
-                return timeA.localeCompare(timeB);
-              })
-              .map((showtime) => (
-                <button
-                  key={showtime.id}
-                  onClick={() => {
-                    console.log("Time clicked:", showtime);
-                    setSelectedShowtime(showtime);
-                    clearSelection();
-                  }}
-                  className={
-                    selectedShowtime?.id === showtime.id
-                      ? "stime active"
-                      : "stime"
-                  }
-                >
-                  {showtime.time}
-                </button>
-              ))}
+            <h4>Chọn suất chiếu</h4>
+            <div className="time-select-container">
+              {showtimes
+                .filter((st) => st.date === selectedDate)
+                .sort((a, b) => (a.time || "").localeCompare(b.time || ""))
+                .map((showtime) => (
+                  <button
+                    key={showtime.id}
+                    onClick={() => {
+                      setSelectedShowtime(showtime);
+                      clearSelection();
+                    }}
+                    className={selectedShowtime?.id === showtime.id ? "stime active" : "stime"}
+                  >
+                    {showtime.time}
+                  </button>
+                ))}
+            </div>
           </div>
 
-          <div className="screen-bar">MÀN HÌNH</div>
+          <div className="screen-wrapper">
+            <div className="screen-bar">MÀN HÌNH</div>
+            <div className="screen-glow"></div>
+          </div>
           <div className="legend">
             <span>
               <b className="legend-dot available" /> Trống: {availableSeats}
@@ -605,8 +547,7 @@ export default function KioskBooking() {
       <footer className="footer">
         <div className="footer-content">
           <p>
-            &copy; 2024 CineGo. All rights reserved. | Design by OpenAI's
-            ChatGPT
+            &copy; 2024 CineGo. Build with Modern Web Technologies.
           </p>
         </div>
       </footer>

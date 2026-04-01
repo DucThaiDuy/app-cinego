@@ -20,3 +20,22 @@ export const adminmovieService = {
     return response.data;
   },
 };
+
+export const publicMovieService = {
+  // ================= FETCH PUBLIC MOVIES =================
+  fetchMovies: async (pagination: PaginationRequest) => {
+    const pageIndex = Math.max((pagination.page ?? 1) - 1, 0);
+
+    const params = new URLSearchParams({
+      page: String(pageIndex),
+      size: String(pagination.limit ?? 10),
+    });
+    const response = await service({
+      url: `${API.PUBLIC.MOVIES}?${params.toString()}`,
+      method: "GET",
+    });
+    console.log("Public API Response Data:", response.data);
+    return response.data;
+  },
+};
+
