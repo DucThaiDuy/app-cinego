@@ -10,8 +10,18 @@ import { ActorRequest } from "../types/request/ActorRequest";
 import { Actor } from "../types/model/actor.model";
 import { ShowTimeRequest } from "../types/request/ShowTimeRequest";
 import { ShowTimeResponse } from "../types/response/ShowTimeResponse";
+import { SeatResponse } from "../types/response/SeatResponse";
 
 export const adminShowTimeService = {
+  // ================= GET SEATS BY SHOWTIME ID =================
+  getSeats: async (showtimeId: number): Promise<SeatResponse[]> => {
+    const response = await service<ApiResponse<SeatResponse[]>>({
+      url: `${API.ADMIN.SHOWTIMES}/${showtimeId}/seats`,
+      method: "GET",
+    });
+    return response.data;
+  },
+
   // ================ ADD ACTOR =================
   add: async (data: ShowTimeRequest): Promise<ShowTimeResponse> => {
     const response = await service<ApiResponse<ShowTimeResponse>>({

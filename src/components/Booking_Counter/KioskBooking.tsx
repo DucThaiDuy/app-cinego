@@ -8,16 +8,20 @@ import type { User } from "../../api/types/model/User.model";
 import { adminUserService } from "../../api/service/user.service";
 import { adminBookingService } from "../../api/service/booking.service";
 import { adminShowTimeService } from "../../api/service/showTime.service";
+import { adminHallService } from "../../api/service/hall.service";
 import type { BookingRequest } from "../../api/types/request/BookingRequest";
 import type { ShowTimeResponse } from "../../api/types/response/ShowTimeResponse";
-import { BookingStatus } from "../../components/ENUM/BookingStatus.enum";
-import { PaymentMethod } from "../../components/ENUM/PaymentMethod.enum";
+import type { HallResponse } from "../../api/types/response/HallResponse";
+import { BookingStatus } from "../../api/types/enum/BookingStatus";
+import { PaymentMethod } from "../../api/types/enum/PaymentMethod";
 import { BookingConfirmModal } from "./BookingConfirmModal";
+
 type Seat = {
-  id: string;
+  id: number;
   row: string;
   number: number;
   status: "available" | "booked" | "selected";
+  price: number;
 };
 
 // type Movie = {
@@ -27,38 +31,6 @@ type Seat = {
 //   duration: number;
 //   screen: string;
 // };
-
-const seatingRows = [
-  "A",
-  "B",
-  "C",
-  "D",
-  "E",
-  "F",
-  "G",
-  "H",
-  "I",
-  "J",
-  "K",
-  "L",
-];
-const seatsPerRow = 16;
-const seatPrice = 100000;
-
-const buildSeats = (): Seat[] => {
-  const list: Seat[] = [];
-  seatingRows.forEach((row) => {
-    for (let i = 1; i <= seatsPerRow; i++) {
-      list.push({
-        id: `${row}${i}`,
-        row,
-        number: i,
-        status: Math.random() < 0.12 ? "booked" : "available",
-      });
-    }
-  });
-  return list;
-};
 
 export default function KioskBooking() {
   const [movies, setMovies] = useState<MovieResponse[]>([]);
@@ -79,7 +51,8 @@ export default function KioskBooking() {
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [selectedShowtime, setSelectedShowtime] =
     useState<ShowTimeResponse | null>(null);
-  const [seats, setSeats] = useState<Seat[]>(buildSeats());
+  const [hall, setHall] = useState<HallResponse | null>(null);
+  const [seats, setSeats] = useState<Seat[]>([]);
   const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
 
   // NEW STATES FOR CONFIRM MODAL
@@ -134,59 +107,38 @@ export default function KioskBooking() {
       const datesWithDisplay: Array<{ date: string; display: string }> = [];
 
       data.items.forEach((showtime: ShowTimeResponse) => {
-        console.log("Processing showtime:", showtime); // Debug
-        console.log("showtime.date:", showtime.date);
-        console.log("showtime.date type:", typeof showtime.date);
-        console.log("Boolean(showtime.date):", Boolean(showtime.date));
-        console.log(
-          "showtime.date === '2026-01-20':",
-          showtime.date === "2026-01-20",
-        );
-        if (showtime.date && !dateSet.has(showtime.date)) {
-          console.log("Adding date:", showtime.date);
-          dateSet.add(showtime.date);
-          const date = new Date(showtime.date + "T00:00:00");
+        const sDate = showtime.date;
+        if (sDate && !dateSet.has(sDate)) {
+          dateSet.add(sDate);
+          const date = new Date(sDate + "T00:00:00");
           datesWithDisplay.push({
-            date: showtime.date,
+            date: sDate,
             display: date.toLocaleDateString("vi-VN", {
               weekday: "short",
               day: "numeric",
               month: "numeric",
             }),
           });
-        } else {
-          console.log(
-            "Skipping date:",
-            showtime.date,
-            "already exists or falsy",
-          );
         }
       });
-
-      console.log("Extracted dates:", datesWithDisplay); // Debug
 
       // Sort dates
       datesWithDisplay.sort(
         (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
       );
 
-      console.log("Setting availableDates:", datesWithDisplay);
       setAvailableDates(datesWithDisplay);
 
       // Set first available date as default
       if (datesWithDisplay.length > 0) {
-        console.log("Setting selectedDate to:", datesWithDisplay[0].date);
         setSelectedDate(datesWithDisplay[0].date);
-        // Set first showtime of that date
         const firstShowtime = data.items.find(
           (st: ShowTimeResponse) => st.date === datesWithDisplay[0].date,
         );
         setSelectedShowtime(firstShowtime || null);
-        console.log("Set first showtime:", firstShowtime); // Debug
       }
     } catch (err: any) {
       console.error("Load showtimes error:", err.message);
-      console.error("Full error:", err);
     }
   }, []);
 
@@ -196,36 +148,61 @@ export default function KioskBooking() {
 
   useEffect(() => {
     if (movies.length > 0 && !selectedMovie) {
-      console.log("Setting selectedMovie to:", movies[0]);
-      console.log("selectedMovie id:", movies[0]?.id);
       setSelectedMovie(movies[0]);
     }
-  }, [movies]);
+  }, [movies, selectedMovie]);
 
   // Load showtimes when selected movie changes
   useEffect(() => {
-    console.log("useEffect triggered - selectedMovie:", selectedMovie);
-    console.log("selectedMovie?.id:", selectedMovie?.id);
-    console.log("selectedMovie?.id type:", typeof selectedMovie?.id);
-    console.log("Boolean(selectedMovie?.id):", Boolean(selectedMovie?.id));
-    console.log("Number(selectedMovie?.id):", Number(selectedMovie?.id));
-    console.log(
-      "isNaN(Number(selectedMovie?.id)):",
-      isNaN(Number(selectedMovie?.id)),
-    );
-    if (
-      selectedMovie &&
-      selectedMovie.id != null &&
-      selectedMovie.id !== undefined &&
-      !isNaN(Number(selectedMovie.id))
-    ) {
-      console.log("Calling loadShowtimes with movieId:", selectedMovie.id);
+    if (selectedMovie?.id) {
       loadShowtimes(Number(selectedMovie.id));
-      clearSelection();
-    } else {
-      console.log("selectedMovie.id is invalid, not calling loadShowtimes");
+      setSelectedSeats([]);
     }
   }, [selectedMovie, loadShowtimes]);
+
+  // Load seats when selected showtime changes
+  useEffect(() => {
+    const loadSeatsAndLayout = async () => {
+      const hId = selectedShowtime?.hallId;
+      const sId = selectedShowtime?.id;
+
+      if (!sId || !hId) {
+        console.warn("Missing showtimeId or hallId:", { sId, hId, selectedShowtime });
+        return;
+      }
+
+      console.log(`Fetching Hall ${hId} and Seats for Showtime ${sId}...`);
+      try {
+        const [hallData, availabilityData] = await Promise.all([
+          adminHallService.getById(hId),
+          adminShowTimeService.getSeats(sId),
+        ]);
+
+        console.log("Hall Data:", hallData);
+        console.log("Availability Data:", availabilityData);
+
+        setHall(hallData);
+
+        // Merge Hall Layout with Availability using pure camelCase
+        const mappedSeats: Seat[] = availabilityData.map((s) => {
+          return {
+            id: s.id,
+            row: s.rowName,
+            number: s.seatNumber,
+            status: s.isBooked ? "booked" : "available",
+            price: s.basePrice,
+          };
+        });
+
+        setSeats(mappedSeats);
+      } catch (err) {
+        console.error("Load seats/layout error:", err);
+      }
+    };
+
+    loadSeatsAndLayout();
+    setSelectedSeats([]);
+  }, [selectedShowtime]);
 
   const availableSeats = useMemo(
     () => seats.filter((s) => s.status === "available").length,
@@ -237,16 +214,15 @@ export default function KioskBooking() {
   );
   const totalSeats = seats.length;
 
-  const formattedSeats = useMemo(
-    () =>
-      seatingRows.map((row) => ({
-        row,
-        rowSeats: seats
-          .filter((seat) => seat.row === row)
-          .sort((a, b) => a.number - b.number),
-      })),
-    [seats],
-  );
+  const formattedSeats = useMemo(() => {
+    const rows = Array.from(new Set(seats.map((s) => s.row))).sort();
+    return rows.map((row) => ({
+      row,
+      rowSeats: seats
+        .filter((seat) => seat.row === row)
+        .sort((a, b) => a.number - b.number),
+    }));
+  }, [seats]);
 
   const toggleSeat = (seat: Seat) => {
     if (seat.status === "booked") return;
@@ -263,7 +239,11 @@ export default function KioskBooking() {
     }
   };
 
-  const totalPrice = selectedSeats.length * seatPrice;
+  const totalPrice = useMemo(
+    () => selectedSeats.reduce((sum, s) => sum + s.price, 0),
+    [selectedSeats],
+  );
+
   const clearSelection = () => {
     setSelectedSeats([]);
     setSeats((prev) =>
@@ -319,13 +299,17 @@ export default function KioskBooking() {
       const bookingData: BookingRequest = {
         userId: customer.id!,
         showtimeId: showtimeId,
-        ticketPrice: seatPrice * selectedSeats.length,
+        ticketPrice: totalPrice,
         comboPrice: comboPrice,
         discountAmount: discountAmt,
         pointsUsed: 0,
         totalAmount: totalPrice + comboPrice - discountAmt,
         status: BookingStatus.PAID,
         paymentMethod: pmEnum,
+        seats: selectedSeats.map((s) => ({
+          seatId: s.id,
+          price: s.price,
+        })),
       };
 
       const result = await adminBookingService.add(bookingData);
@@ -339,12 +323,14 @@ export default function KioskBooking() {
       setShowConfirmModal(false);
     } catch (error: any) {
       console.error("Lỗi tạo booking:", error);
+      const apiErrorMessage = error.response?.data?.message || error.response?.data?.error || error.message;
       alert(
         "Lỗi khi xác nhận bán vé: " +
-          (error.response?.data?.message ||
-            error.message ||
-            "Kiểm tra Console / Network"),
+          (apiErrorMessage || "Kiểm tra Console / Network")
       );
+      if (error.response?.data) {
+        console.log("Chi tiết lỗi từ Server:", error.response.data);
+      }
     } finally {
       setBookingLoading(false);
     }
@@ -418,16 +404,22 @@ export default function KioskBooking() {
             <h4>Chọn suất chiếu</h4>
             <div className="time-select-container">
               {showtimes
-                .filter((st) => st.date === selectedDate)
-                .sort((a, b) => (a.time || "").localeCompare(b.time || ""))
-                .map((showtime) => (
+                .filter((st: ShowTimeResponse) => st.date === selectedDate)
+                .sort((a: ShowTimeResponse, b: ShowTimeResponse) =>
+                  (a.time || "").localeCompare(b.time || ""),
+                )
+                .map((showtime: ShowTimeResponse) => (
                   <button
                     key={showtime.id}
                     onClick={() => {
                       setSelectedShowtime(showtime);
-                      clearSelection();
+                      setSelectedSeats([]);
                     }}
-                    className={selectedShowtime?.id === showtime.id ? "stime active" : "stime"}
+                    className={
+                      selectedShowtime?.id === showtime.id
+                        ? "stime active"
+                        : "stime"
+                    }
                   >
                     {showtime.time}
                   </button>
@@ -464,7 +456,7 @@ export default function KioskBooking() {
                       className={`seat ${seat.status}`}
                       onClick={() => toggleSeat(seat)}
                       disabled={seat.status === "booked"}
-                      title={`Ghế: ${seat.id}\nGiá: ${seatPrice.toLocaleString()}đ\nLoại: Thường`}
+                      title={`Ghế: ${seat.row}${seat.number}\nGiá: ${seat.price.toLocaleString()}đ`}
                     >
                       {seat.number}
                     </button>
@@ -485,13 +477,16 @@ export default function KioskBooking() {
               <span>Phim:</span> {selectedMovie?.title}
             </p>
             <p>
-              <span>Phòng:</span> {selectedShowtime?.hall_name || "Chưa chọn"}
+              <span>Phòng:</span> {selectedShowtime?.hallName || "Chưa chọn"}
             </p>
             <p>
               <span>Suất:</span>{" "}
-              {selectedDate && selectedShowtime?.time
-                ? `${new Date(selectedDate).toLocaleDateString("vi-VN")} - ${selectedShowtime.time}`
-                : "Chưa chọn"}
+              {(() => {
+                const stTime = selectedShowtime?.time;
+                return selectedDate && stTime
+                  ? `${new Date(selectedDate).toLocaleDateString("vi-VN")} - ${stTime}`
+                  : "Chưa chọn";
+              })()}
             </p>
             <p>
               <span>Thời lượng:</span> {selectedMovie?.durationMinutes} phút
@@ -503,7 +498,11 @@ export default function KioskBooking() {
                 : "Chưa chọn"}
             </p>
             <p>
-              <span>Đơn giá:</span> {seatPrice.toLocaleString()} đ
+              <span>Đơn giá (TB):</span>{" "}
+              {selectedSeats.length
+                ? (totalPrice / selectedSeats.length).toLocaleString()
+                : 0}{" "}
+              đ
             </p>
             <p className="total">
               <span>Tổng tiền:</span> {totalPrice.toLocaleString()} đ
@@ -534,8 +533,8 @@ export default function KioskBooking() {
           showtime: selectedShowtime?.time
             ? `${new Date(selectedDate).toLocaleDateString("vi-VN")} - ${selectedShowtime.time}`
             : "Chưa chọn",
-          room: selectedShowtime?.hall_name || "Chưa chọn",
-          seats: selectedSeats.map((s) => s.id),
+          room: selectedShowtime?.hallName || "Chưa chọn",
+          seats: selectedSeats.map((s) => `${s.row}${s.number}`),
           totalPrice: totalPrice,
           discount:
             selectedCustomer?.totalPoints && selectedCustomer.totalPoints > 0

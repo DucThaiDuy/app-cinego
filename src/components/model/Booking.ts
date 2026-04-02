@@ -1,5 +1,5 @@
-import { BookingStatus } from "../ENUM/BookingStatus.enum";
-import { PaymentMethod } from "../ENUM/PaymentMethod.enum";
+import { BookingStatus } from "../../api/types/enum/BookingStatus";
+import { PaymentMethod } from "../../api/types/enum/PaymentMethod";
 
 export interface Booking {
   id: number;

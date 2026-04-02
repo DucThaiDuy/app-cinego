@@ -1,12 +1,12 @@
 // PaymentMethod.ts
 export const PaymentMethod = {
-  ATM: "atm",
-  VISA: "visa",
-  MOMO: "momo",
-  ZALOPAY: "zalopay",
-  VNPAY: "vnpay",
-  BANK_TRANSFER: "bank_transfer",
-  CASH: "cash",
+  ATM: "ATM",
+  VISA: "VISA",
+  MOMO: "MOMO",
+  ZALOPAY: "ZALOPAY",
+  VNPAY: "VNPAY",
+  BANK_TRANSFER: "BANK_TRANSFER",
+  CASH: "CASH",
 } as const;
 
 export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod];

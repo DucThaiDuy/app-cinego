@@ -1,5 +1,5 @@
-import { BookingStatus } from "../../../components/ENUM/BookingStatus.enum";
-import { PaymentMethod } from "../../../components/ENUM/PaymentMethod.enum";
+import { BookingStatus } from "../enum/BookingStatus";
+import { PaymentMethod } from "../enum/PaymentMethod";
 
 export interface BookingRequest {
   userId: number;
@@ -13,4 +13,5 @@ export interface BookingRequest {
 
   status: BookingStatus;
   paymentMethod: PaymentMethod;
+  seats: Array<{ seatId: number; price: number }>;
 }

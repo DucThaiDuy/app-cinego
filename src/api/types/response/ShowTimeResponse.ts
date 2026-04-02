@@ -1,16 +1,21 @@
 export interface ShowTimeResponse {
   id: number;
+  movieId: number;
+  hallId: number;
+  cinemaId: number;
+  
   posterUrl: string;
-  movie_title: string;
-  cinema_name: string;
-  hall_name: string;
+  movieTitle: string;
+  cinemaName: string;
+  hallName: string;
 
   date: string; // yyyy-MM-dd
   time: string; // HH:mm:ss
+  showDatetime?: string;
 
   format: string;
   language: string;
 
-  available_seats: string | number;
+  availableSeats: string | number;
   status: string;
 }

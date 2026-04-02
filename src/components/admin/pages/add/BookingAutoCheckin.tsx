@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { BrowserMultiFormatReader } from "@zxing/browser";
 import type { Booking } from "../../../model/Booking";
-import { BookingStatus } from "../../../ENUM/BookingStatus.enum";
+import { BookingStatus } from "../../../../api/types/enum/BookingStatus";
+import { PaymentMethod } from "../../../../api/types/enum/PaymentMethod";
 import "./scss/BookingAutoCheckin.scss";
 import PageHeader from "../../../UI/PageHearder/PageHeader";
 
@@ -21,7 +22,7 @@ const initialBookings: Booking[] = [
     points_used: 0,
     total_amount: 130000,
     status: BookingStatus.PAID,
-    payment_method: "visa",
+    payment_method: PaymentMethod.VISA,
     checked_in_at: undefined,
     checked_in_by: undefined,
     created_at: "2025-12-28T10:00:00",
@@ -42,7 +43,7 @@ const initialBookings: Booking[] = [
     points_used: 1000,
     total_amount: 200000,
     status: BookingStatus.PENDING,
-    payment_method: "momo",
+    payment_method: PaymentMethod.MOMO,
     checked_in_at: undefined,
     checked_in_by: undefined,
     created_at: "2025-12-27T15:30:00",

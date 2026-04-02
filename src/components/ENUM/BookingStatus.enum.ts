@@ -1,10 +1,10 @@
 // BookingStatus.ts
 export const BookingStatus = {
-  PENDING: "pending",
-  PAID: "paid",
-  USED: "used",
-  CANCELLED: "cancelled",
-  REFUNDED: "refunded",
+  PENDING: "PENDING",
+  PAID: "PAID",
+  USED: "USED",
+  CANCELLED: "CANCELLED",
+  REFUNDED: "REFUNDED",
 } as const;
 
 export type BookingStatus = (typeof BookingStatus)[keyof typeof BookingStatus];
