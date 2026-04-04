@@ -15,13 +15,14 @@ import type { HallResponse } from "../../api/types/response/HallResponse";
 import { BookingStatus } from "../../api/types/enum/BookingStatus";
 import { PaymentMethod } from "../../api/types/enum/PaymentMethod";
 import { BookingConfirmModal } from "./BookingConfirmModal";
-
+import { jsPDF } from "jspdf";
 type Seat = {
-  id: number;
+  id: number | string;
   row: string;
   number: number;
-  status: "available" | "booked" | "selected";
+  status: "available" | "booked" | "selected" | "empty" | "unavailable";
   price: number;
+  type?: number; // 0 for empty, 1 for standard, 2 for vip
 };
 
 // type Movie = {
@@ -59,6 +60,7 @@ export default function KioskBooking() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<User | null>(null);
   const [bookingLoading, setBookingLoading] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // Load movies
   const loadMovies = useCallback(async () => {
@@ -202,19 +204,64 @@ export default function KioskBooking() {
 
     loadSeatsAndLayout();
     setSelectedSeats([]);
-  }, [selectedShowtime]);
+  }, [selectedShowtime, refreshTrigger]);
 
-  const availableSeats = useMemo(
-    () => seats.filter((s) => s.status === "available").length,
-    [seats],
-  );
-  const bookedSeats = useMemo(
-    () => seats.filter((s) => s.status === "booked").length,
-    [seats],
-  );
-  const totalSeats = seats.length;
+  // We will calculate these from formattedSeats later since layout parsing overrides API.
 
-  const formattedSeats = useMemo(() => {
+  const formattedSeats: { row: string; rowSeats: Seat[] }[] = useMemo(() => {
+    if (hall?.seatLayout) {
+      try {
+        const layoutObj = typeof hall.seatLayout === 'string' ? JSON.parse(hall.seatLayout) : hall.seatLayout;
+        if (layoutObj?.layout) {
+          const layoutGrid = layoutObj.layout; // number[][]
+          return layoutGrid.map((rowArr: number[], i: number) => {
+            const rowStr = String.fromCharCode(65 + i);
+            let colCount = 1;
+            const rowSeats = rowArr.map((val: number, j: number) => {
+              if (val === 0) {
+                return {
+                  id: `empty-${i}-${j}`,
+                  row: rowStr,
+                  number: -1,
+                  status: "empty" as const,
+                  price: 0,
+                  type: 0
+                };
+              }
+
+              let type = val;
+              let isBooked = false;
+              if (val === 10) { type = 1; isBooked = true; }
+              if (val === 20) { type = 2; isBooked = true; }
+
+              const displayNum = colCount++;
+              const isSelected = selectedSeats.some(s => s.row === rowStr && s.number === displayNum);
+              const seatFromApi = seats.find((s) => s.row === rowStr && s.number === displayNum);
+              
+              if (seatFromApi) {
+                  return { 
+                    ...seatFromApi, 
+                    type,
+                    status: isSelected ? "selected" as const : ((isBooked || seatFromApi.status === "booked") ? "booked" as const : "available" as const)
+                  };
+              }
+              return {
+                  id: `placeholder-${i}-${j}`,
+                  row: rowStr,
+                  number: displayNum,
+                  status: isSelected ? "selected" as const : (isBooked ? "booked" as const : "available" as const),
+                  price: type === 2 ? 80000 : 50000,
+                  type
+              } as any;
+            });
+            return { row: rowStr, rowSeats: rowSeats as Seat[] };
+          });
+        }
+      } catch (e) {
+        console.error("Error parsing layout:", e);
+      }
+    }
+
     const rows = Array.from(new Set(seats.map((s) => s.row))).sort();
     return rows.map((row) => ({
       row,
@@ -222,9 +269,26 @@ export default function KioskBooking() {
         .filter((seat) => seat.row === row)
         .sort((a, b) => a.number - b.number),
     }));
-  }, [seats]);
+  }, [seats, hall, selectedSeats]);
+
+  const layoutStats = useMemo(() => {
+    let avail = 0;
+    let booked = 0;
+    let total = 0;
+    formattedSeats.forEach(row => {
+      row.rowSeats.forEach(seat => {
+        if (seat.type !== 0) {
+          total++;
+          if (seat.status === 'available') avail++;
+          else if (seat.status === 'booked' || seat.status === 'unavailable') booked++;
+        }
+      });
+    });
+    return { avail, booked, total };
+  }, [formattedSeats]);
 
   const toggleSeat = (seat: Seat) => {
+    console.log("Selected Seat Info:", seat);
     if (seat.status === "booked") return;
     if (seat.status === "selected") {
       setSelectedSeats((prev) => prev.filter((s) => s.id !== seat.id));
@@ -307,20 +371,91 @@ export default function KioskBooking() {
         status: BookingStatus.PAID,
         paymentMethod: pmEnum,
         seats: selectedSeats.map((s) => ({
-          seatId: s.id,
+          seatId: Number(s.id) as number,
           price: s.price,
         })),
+        sendEmail: emailTicket,
       };
 
       const result = await adminBookingService.add(bookingData);
 
-      alert(
-        `Bán vé thành công! Mã booking: ${result.bookingCode || "SUCCESS"}\nKhách: ${customer.fullName}\n${selectedSeats.length} ghế - ${totalPrice.toLocaleString()}đ\nTiền đồ ăn: ${comboPrice.toLocaleString()}đ\n\nIn vé: ${printTicket ? "Có" : "Không"} | Email: ${emailTicket ? emailAddress : "Không"}`,
-      );
+      if (printTicket) {
+        try {
+          const doc = new jsPDF({
+            orientation: "portrait",
+            unit: "mm",
+            format: [80, 150]
+          });
+
+          const sanitize = (text: string) => {
+            if (!text) return "";
+            let str = text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            str = str.replace(/đ/g, "d").replace(/Đ/g, "D");
+            return str;
+          };
+
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(14);
+          doc.text("CINEGO TICKET", 40, 10, { align: "center" });
+
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(10);
+          doc.text("-----------------------------------------", 40, 15, { align: "center" });
+
+          doc.text(`Booking CD: ${sanitize(result.bookingCode || "SUCCESS")}`, 10, 25);
+          doc.text(`Customer: ${sanitize(customer.fullName || "Guest")}`, 10, 32);
+
+          doc.setFont("helvetica", "bold");
+          doc.text(`Movie: ${sanitize(selectedMovie.title || "")}`, 10, 42);
+
+          doc.setFont("helvetica", "normal");
+          const dateStr = selectedDate ? new Date(selectedDate).toLocaleDateString("vi-VN") : "";
+          doc.text(`Date: ${dateStr}`, 10, 49);
+          doc.text(`Time: ${selectedShowtime?.time || ""}`, 10, 56);
+          doc.text(`Hall: ${sanitize(selectedShowtime?.hallName || "")}`, 10, 63);
+          const seatsText = selectedSeats.map((s) => `${s.row}${s.number}`).join(", ");
+          doc.text(`Seats: ${seatsText}`, 10, 70);
+
+          doc.text("-----------------------------------------", 40, 80, { align: "center" });
+          doc.text(`Tickets: ${totalPrice.toLocaleString()} VND`, 10, 87);
+          doc.text(`Combos: ${comboPrice.toLocaleString()} VND`, 10, 94);
+          doc.text(`Discount: -${discountAmt.toLocaleString()} VND`, 10, 101);
+
+          doc.setFont("helvetica", "bold");
+          const finalTotal = totalPrice + comboPrice - discountAmt;
+          doc.text(`Total Paid: ${finalTotal.toLocaleString()} VND`, 10, 111);
+
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(8);
+          doc.text("Thank you & Enjoy the movie!", 40, 130, { align: "center" });
+
+          // Lưu PDF
+          doc.save(`CineGo_Ticket_${result.bookingCode || "SUCCESS"}.pdf`);
+
+          // In PDF
+          doc.autoPrint();
+          const pdfBlob = doc.output("blob");
+          const pdfUrl = URL.createObjectURL(pdfBlob);
+          window.open(pdfUrl, "_blank");
+        } catch (e) {
+          console.error("Lỗi khi tạo PDF:", e);
+        }
+      }
+
+      if (emailTicket) {
+        alert(
+          `Thanh toán thành công, email vé đang được gửi!\n\nMã booking: ${result.bookingCode || "SUCCESS"}\nKhách: ${customer.fullName}\n${selectedSeats.length} ghế - ${totalPrice.toLocaleString()}đ\nTiền đồ ăn: ${comboPrice.toLocaleString()}đ\n\nIn vé: ${printTicket ? "Có" : "Không"} | Email: Có (${emailAddress})`,
+        );
+      } else {
+        alert(
+          `Bán vé thành công! Mã booking: ${result.bookingCode || "SUCCESS"}\nKhách: ${customer.fullName}\n${selectedSeats.length} ghế - ${totalPrice.toLocaleString()}đ\nTiền đồ ăn: ${comboPrice.toLocaleString()}đ\n\nIn vé: ${printTicket ? "Có" : "Không"} | Email: Không`,
+        );
+      }
 
       clearSelection();
       setSelectedCustomer(null);
       setShowConfirmModal(false);
+      setRefreshTrigger((prev) => prev + 1);
     } catch (error: any) {
       console.error("Lỗi tạo booking:", error);
       const apiErrorMessage = error.response?.data?.message || error.response?.data?.error || error.message;
@@ -433,16 +568,15 @@ export default function KioskBooking() {
           </div>
           <div className="legend">
             <span>
-              <b className="legend-dot available" /> Trống: {availableSeats}
+              <b className="legend-dot available" /> Trống: {layoutStats.avail}
             </span>
             <span>
               <b className="legend-dot selected" /> Đã chọn:{" "}
               {selectedSeats.length}
             </span>
             <span>
-              <b className="legend-dot booked" /> Đã bán: {bookedSeats}
+              <b className="legend-dot booked" /> Đã bán: {layoutStats.booked}
             </span>
-            <span className="legend-total">Tổng: {totalSeats} ghế</span>
           </div>
 
           <div className="seat-map" role="grid">
@@ -453,12 +587,12 @@ export default function KioskBooking() {
                   {rowSeats.map((seat) => (
                     <button
                       key={seat.id}
-                      className={`seat ${seat.status}`}
+                      className={`seat ${seat.status} ${seat.type === 2 ? 'vip' : ''}`}
                       onClick={() => toggleSeat(seat)}
-                      disabled={seat.status === "booked"}
-                      title={`Ghế: ${seat.row}${seat.number}\nGiá: ${seat.price.toLocaleString()}đ`}
+                      disabled={seat.status === "booked" || seat.status === "empty" || seat.status === "unavailable"}
+                      title={seat.status !== "empty" ? `Ghế: ${seat.row}${seat.number}\nGiá: ${seat.price.toLocaleString()}đ` : ''}
                     >
-                      {seat.number}
+                      {seat.status !== "empty" ? seat.number : ""}
                     </button>
                   ))}
                 </div>
@@ -494,7 +628,7 @@ export default function KioskBooking() {
             <p>
               <span>Ghế:</span>{" "}
               {selectedSeats.length
-                ? selectedSeats.map((s) => s.id).join(", ")
+                ? selectedSeats.map((s) => `${s.row}${s.number}`).join(", ")
                 : "Chưa chọn"}
             </p>
             <p>

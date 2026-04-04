@@ -166,17 +166,17 @@ export default function ShowtimeManagement() {
             {showtimes.map((s) => (
               <tr key={s.id}>
                 <td className="movie">
-                  <img src={s.posterUrl} alt={s.movie_title} />
+                  <img src={s.posterUrl} alt={s.movieTitle} />
                   {/* {s.posterUrl} */}
-                  <span className="movie-title">{s.movie_title}</span>
+                  <span className="movie-title">{s.movieTitle}</span>
                 </td>
-                <td>{s.cinema_name}</td>
-                <td>{s.hall_name}</td>
+                <td>{s.cinemaName}</td>
+                <td>{s.hallName}</td>
                 <td>{s.date}</td>
                 <td>{s.time}</td>
                 <td className="format">{s.format}</td>
                 <td>{s.language === "subtitle" ? "Phụ đề" : "Lồng tiếng"}</td>
-                <td>{s.available_seats}</td>
+                <td>{s.availableSeats}</td>
                 <td>
                   <span className={`status ${s.status}`}>{s.status}</span>
                 </td>

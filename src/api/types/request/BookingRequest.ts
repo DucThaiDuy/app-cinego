@@ -14,4 +14,5 @@ export interface BookingRequest {
   status: BookingStatus;
   paymentMethod: PaymentMethod;
   seats: Array<{ seatId: number; price: number }>;
+  sendEmail?: boolean;
 }
