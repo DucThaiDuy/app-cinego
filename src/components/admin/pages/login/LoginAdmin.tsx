@@ -28,7 +28,6 @@ export default function LoginAdmin() {
 
   const handleSubmit = async () => {
     if (!email || !password) {
-      // alert("Vui lòng nhập email và mật khẩu");
       message.error(UI_TEXT.AUTH.ENTER_EMAIL_PASSWORD);
       return;
     }
@@ -44,14 +43,12 @@ export default function LoginAdmin() {
         ];
 
       if (!redirectPath) {
-        // alert("Role không hợp lệ");
         message.error(UI_TEXT.AUTH.INVALID_ROLE);
         return;
       }
 
       navigate(redirectPath, { replace: true });
     } catch (error: any) {
-      // alert(error?.response?.data?.message || "Email hoặc mật khẩu không đúng");
       message.error(UI_TEXT.AUTH.INCORRECT_EMAIL_PASSWORD);
     } finally {
       setLoading(false);
@@ -78,7 +75,7 @@ export default function LoginAdmin() {
             </div>
             <h1 className="login-title">Chào mừng trở lại</h1>
             <p className="login-subtitle">Đăng nhập để tiếp tục</p>
-            <p>admin@cinego.com / manager.hn@cinego.com / 123456</p>
+            <p>admin@cinego.com / manager.nt@cinego.com / 123456</p>
           </div>
 
           {/* Form Fields */}

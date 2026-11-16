@@ -1,29 +1,33 @@
 @use "../../../styles/admin-theme.scss";
 
 .booking-page {
-  // padding: 25px 30px;
-  background-color: var(--admin-bg);
+  animation: fadeIn 0.4s ease;
 
   .filter-bar {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 25px;
+    gap: 16px;
+    margin-bottom: 24px;
+    background: var(--admin-bg-elevated);
+    padding: 16px;
+    border-radius: var(--admin-radius-md);
+    border: 1px solid var(--admin-border);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
 
     input,
     select {
-      padding: 10px 15px;
-      border-radius: 8px;
+      padding: 10px 16px;
+      border-radius: var(--admin-radius-sm);
       border: 1px solid var(--admin-border);
-      background: var(--admin-bg-elevated);
+      background: var(--admin-bg);
       color: var(--admin-text);
       font-size: 14px;
-      transition: 0.2s;
+      transition: all 0.25s ease;
 
       &:focus {
         border-color: var(--admin-primary);
         outline: none;
-        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.18);
+        box-shadow: 0 0 0 4px var(--admin-primary-soft);
       }
     }
 
@@ -31,94 +35,91 @@
       flex: 1 1 250px;
     }
     select {
-      min-width: 180px;
+      min-width: 200px;
       cursor: pointer;
     }
   }
 
   .table-container {
     width: 100%;
-    overflow-x: auto; /* Cuộn nội bộ nếu bảng quá rộng */
+    overflow-x: auto;
+    border-radius: var(--admin-radius-md);
+    background: var(--admin-bg-elevated);
+    border: 1px solid var(--admin-border);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
   }
 
   .booking-table {
     width: 100%;
     border-collapse: collapse;
-    border-radius: 10px;
-    overflow: hidden;
-    background: var(--admin-bg-elevated);
-    border: 1px solid var(--admin-border);
+    white-space: nowrap;
 
     th,
     td {
-      padding: 12px 15px;
+      padding: 16px 20px;
       font-size: 14px;
       text-align: left;
     }
 
     thead {
       background: var(--admin-bg-soft);
+      border-bottom: 1px solid var(--admin-border);
+      
       th {
         font-weight: 600;
-        color: var(--admin-text);
+        color: var(--admin-text-muted);
+        text-transform: uppercase;
+        font-size: 12px;
+        letter-spacing: 0.5px;
       }
     }
 
     tbody tr {
-      transition: background 0.2s;
+      transition: background 0.2s ease;
+      border-bottom: 1px solid var(--admin-border);
+      
+      &:last-child {
+        border-bottom: none;
+      }
+
       &:hover {
-        background: #17171b;
+        background: var(--admin-bg-soft);
       }
 
       td {
         color: var(--admin-text);
+        font-weight: 500;
       }
 
       td.status {
-        font-weight: 600;
-        &.PENDING {
-          color: var(--admin-warning);
-        }
-        &.PAID {
-          color: var(--admin-success);
-        }
-        &.USED {
-          color: var(--admin-info);
-        }
-        &.CANCELLED {
-          color: var(--admin-danger);
-        }
-        &.REFUNDED {
-          color: #c084fc;
-        }
+        font-weight: 700;
+        font-size: 12px;
+        
+        &.PENDING { color: var(--admin-warning); }
+        &.PAID { color: var(--admin-success); }
+        &.USED { color: var(--admin-info); }
+        &.CANCELLED { color: var(--admin-danger); }
+        &.REFUNDED { color: #8b5cf6; }
       }
 
-      td.actions button {
-        margin-right: 5px;
-        padding: 6px 10px;
-        border-radius: 6px;
-        border: none;
-        cursor: pointer;
-        color: #fff;
-        font-size: 14px;
-        transition: 0.2s;
+      td.actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        
+        button {
+          padding: 8px;
+          border-radius: 8px;
+          border: none;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
 
-        &.edit {
-          background: #15803d;
           &:hover {
-            background: #166534;
-          }
-        }
-        &.delete {
-          background: var(--admin-primary);
-          &:hover {
-            background: var(--admin-primary-strong);
-          }
-        }
-        &.checkin {
-          background: #1d4ed8;
-          &:hover {
-            background: #1e40af;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
           }
         }
       }
@@ -128,15 +129,16 @@
   @media (max-width: 768px) {
     .filter-bar {
       flex-direction: column;
+      padding: 12px;
     }
     .booking-table th,
     .booking-table td {
-      padding: 8px 10px;
-      font-size: 13px;
-    }
-    .booking-table td.actions button {
-      padding: 5px 8px;
-      font-size: 12px;
+      padding: 12px;
     }
   }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }

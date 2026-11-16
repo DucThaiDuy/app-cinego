@@ -1,67 +1,44 @@
 import React, { useEffect, useRef, useState } from "react";
 import { BrowserMultiFormatReader } from "@zxing/browser";
-import type { Booking } from "../../../model/Booking";
 import { BookingStatus } from "../../../../api/types/enum/BookingStatus";
 import { PaymentMethod } from "../../../../api/types/enum/PaymentMethod";
+import { RefreshCw, Camera } from "lucide-react";
 import "./scss/BookingAutoCheckin.scss";
 import PageHeader from "../../../UI/PageHearder/PageHeader";
-
-const initialBookings: Booking[] = [
-  {
-    id: 1,
-    booking_code: "BK001",
-    user_id: undefined,
-    showtime_id: 1,
-    voucher_id: undefined,
-    customer_name: "Nguyen Van A",
-    customer_email: "a@example.com",
-    customer_phone: "0123456789",
-    ticket_price: 100000,
-    combo_price: 50000,
-    discount_amount: 20000,
-    points_used: 0,
-    total_amount: 130000,
-    status: BookingStatus.PAID,
-    payment_method: PaymentMethod.VISA,
-    checked_in_at: undefined,
-    checked_in_by: undefined,
-    created_at: "2025-12-28T10:00:00",
-    updated_at: "2025-12-28T10:00:00",
-  },
-  {
-    id: 2,
-    booking_code: "BK002",
-    user_id: undefined,
-    showtime_id: 2,
-    voucher_id: undefined,
-    customer_name: "Tran Thi B",
-    customer_email: "b@example.com",
-    customer_phone: "0987654321",
-    ticket_price: 120000,
-    combo_price: 80000,
-    discount_amount: 0,
-    points_used: 1000,
-    total_amount: 200000,
-    status: BookingStatus.PENDING,
-    payment_method: PaymentMethod.MOMO,
-    checked_in_at: undefined,
-    checked_in_by: undefined,
-    created_at: "2025-12-27T15:30:00",
-    updated_at: "2025-12-27T15:30:00",
-  },
-];
+import { adminBookingService } from "../../../../api/service/booking.service";
+import type { BookingResponse } from "../../../../api/types/response/BookingResponse";
+import { MessageContainer, useMessage } from "../../../UI/Message/Message";
 
 export default function BookingAutoCheckin() {
-  const [bookings, setBookings] = useState<Booking[]>(initialBookings);
-  const [scannedBooking, setScannedBooking] = useState<Booking | null>(null);
+  const [bookings, setBookings] = useState<BookingResponse[]>([]);
+  const [scannedBooking, setScannedBooking] = useState<BookingResponse | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
+  const message = useMessage();
   const [cameraPermission, setCameraPermission] = useState<
     "granted" | "denied" | "prompt"
   >("prompt");
+
+  // Load real bookings on mount
+  const loadBookings = async () => {
+    try {
+      const response = await adminBookingService.fetchUsers({ page: 1, limit: 1000 });
+      setBookings(response.items || []);
+    } catch (error) {
+      console.error("Failed to load bookings", error);
+    }
+  };
+
+  useEffect(() => {
+    loadBookings();
+  }, []);
   const [isScanning, setIsScanning] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const codeReaderRef = useRef<BrowserMultiFormatReader | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const isProcessingRef = useRef<boolean>(false);
+  const scanActiveRef = useRef<boolean>(false);
+  const controlsRef = useRef<any>(null);
+  const lastScannedCodeRef = useRef<{ code: string; time: number }>({ code: "", time: 0 });
 
   // Hàm phát âm thanh feedback
   const playSound = (type: 'success' | 'error') => {
@@ -148,6 +125,32 @@ export default function BookingAutoCheckin() {
     }
   };
 
+  const handleManualInput = async () => {
+    const code = window.prompt("Nhập mã QR (UUID/Token) hoặc Mã Booking:");
+    if (!code || !code.trim()) return;
+
+    try {
+      const adminInfoStr = localStorage.getItem("admin_info");
+      if (!adminInfoStr) {
+        message?.error("Không tìm thấy thông tin Admin. Vui lòng đăng nhập lại.");
+        return;
+      }
+      const adminInfo = JSON.parse(adminInfoStr);
+
+      const apiResult = await adminBookingService.checkInQr(code.trim(), adminInfo.id);
+      const ticketData = apiResult?.data || apiResult; // Fallback nếu cấu trúc trả về khác
+
+      playSound("success");
+      setScannedBooking({ ...ticketData, status: ticketData?.status || 'USED' });
+      message?.success(`✅ ${apiResult?.message || "Check-in thành công!"}`);
+    } catch (err: any) {
+      console.error("QR check-in error:", err);
+      playSound("error");
+      const errorDetail = err.response?.data?.message || err.message || "Lỗi xử lý mã";
+      message?.error(`❌ ${errorDetail}`);
+    }
+  };
+
   // Bắt đầu quét
   const startScanning = async () => {
     if (!videoRef.current) return;
@@ -156,7 +159,9 @@ export default function BookingAutoCheckin() {
     if (!hasPermission) return;
 
     setIsScanning(true);
+    scanActiveRef.current = true;
     setErrorMsg("");
+    isProcessingRef.current = false;
 
     try {
       const codeReader = new BrowserMultiFormatReader();
@@ -172,77 +177,91 @@ export default function BookingAutoCheckin() {
         await videoRef.current.play();
       }
 
-      await codeReader.decodeFromVideoElement(
+      controlsRef.current = await codeReader.decodeFromVideoElement(
         videoRef.current,
-        (result, err) => {
-          if (result) {
-            try {
-              const data = result.getText();
-              console.log("QR scanned:", data);
+        async (result, err) => {
+          if (isProcessingRef.current) return;
 
-              if (!data || data.trim() === '') {
-                setErrorMsg("❌ Mã QR trống hoặc không hợp lệ!");
-                playSound("error");
+          if (result) {
+            isProcessingRef.current = true;
+            try {
+              const rawData = result.getText();
+
+              if (!rawData || rawData.trim() === '') {
+                isProcessingRef.current = false;
                 return;
               }
 
-              const found = bookings.find(
-                (b) => b.booking_code.toLowerCase() === data.toLowerCase(),
-              );
+              const now = Date.now();
+              if (lastScannedCodeRef.current.code === rawData && (now - lastScannedCodeRef.current.time) < 3000) {
+                 isProcessingRef.current = false;
+                 return; // Không xử lý lại mã vừa quét trong vòng 3s
+              }
+              lastScannedCodeRef.current = { code: rawData, time: now };
 
-              if (found) {
-                // Kiểm tra trạng thái hiện tại
-                if (found.status === BookingStatus.USED) {
-                  setErrorMsg("⚠️ Booking đã check-in trước đó!");
-                  setScannedBooking(found);
-                  playSound("error");
-                  return;
-                }
+              console.log("QR scanned raw:", rawData);
 
-                // Chỉ cho phép check-in booking đã thanh toán
-                if (found.status !== BookingStatus.PAID) {
-                  setErrorMsg("⚠️ Chỉ có thể check-in booking đã thanh toán!");
-                  setScannedBooking(found);
-                  playSound("error");
-                  return;
-                }
+              let lookupCode = rawData.trim();
+              
+              // Get adminId from localStorage
+              const adminInfoStr = localStorage.getItem("admin_info");
+              const adminInfo = adminInfoStr ? JSON.parse(adminInfoStr) : {};
+              const adminId = adminInfo.id || 1; // Backend requires an adminId
 
-                // Cập nhật booking thành USED
-                setBookings((prev) =>
-                  prev.map((b) =>
-                    b.id === found.id
-                      ? {
-                          ...b,
-                          status: BookingStatus.USED,
-                          checked_in_at: new Date().toISOString(),
-                          checked_in_by: undefined, // Có thể thêm ID của nhân viên check-in sau
-                        }
-                      : b
-                  )
-                );
-                setScannedBooking(found);
-                setErrorMsg("");
-
-                // Phát âm thanh thành công
+              try {
+                // Gửi thẳng Token quét được cho Backend giải quyết
+                const apiResult = await adminBookingService.checkInQr(lookupCode, adminId);
+                const ticketData = apiResult?.data || apiResult; // Lấy body data
+                
+                // Nếu thành công (Backend trả về HTTP 200)
                 playSound("success");
+                let successMsg = apiResult?.message || "✅ Check-in thành công!";
+                if (ticketData?.customerName) {
+                   successMsg += ` Khách: ${ticketData.customerName} - ${ticketData.bookingCode || ""}`;
+                }
 
-                // Tự động dừng quét sau 3 giây
-                setTimeout(() => {
-                  stopScanning();
-                }, 3000);
-              } else {
-                setScannedBooking(null);
-                setErrorMsg("❌ Mã booking không tồn tại!");
+                setScannedBooking({ ...ticketData, status: 'USED' }); // Đè trạng thái thành USED
+                message.success(successMsg);
+                setErrorMsg("");
+                
+                // Cập nhật local state list (nếu đang hiển thị list)
+                if (ticketData?.id) {
+                  setBookings((prev) =>
+                    prev.map((b) => b.id === ticketData.id ? { ...b, status: BookingStatus.USED as any } : b)
+                  );
+                }
+              } catch (apiErr: any) {
+                // Backend ném lỗi HTTP 400 Bad Request
+                const errMsgStr = apiErr.response?.data?.message || apiErr.response?.data?.error || apiErr.message || "Lỗi đọc thẻ";
+                const msg = `❌ Thất bại: ${errMsgStr}`;
+                
+                setErrorMsg(msg);
                 playSound("error");
+                message.error(msg);
+                setScannedBooking(null);
               }
             } catch (processingError) {
               console.error("Error processing QR result:", processingError);
               setErrorMsg("❌ Lỗi xử lý mã QR!");
               playSound("error");
+              message.error("Lỗi xử lý hệ thống");
+            } finally {
+              isProcessingRef.current = false;
             }
-          } else if (err && err.name !== "NotFoundException") {
-            console.error("QR scan error:", err);
-            // Không hiển thị lỗi cho người dùng vì đây là lỗi thường xuyên khi không tìm thấy QR
+          } else if (err) {
+            // Tắt xử lý nếu đã dừng quét
+            if (!scanActiveRef.current) return;
+
+            // ZXing throw continuous errors when scanning empty frames.
+            const isIgnorableError = 
+              err.name === "NotFoundException" || 
+              err.name === "ChecksumException" || 
+              err.name === "FormatException" || 
+              (err.message && err.message.includes("No MultiFormat Readers"));
+              
+            if (!isIgnorableError) {
+               console.warn("QR scan error:", err.message || err.name);
+            }
           }
         },
       );
@@ -255,6 +274,18 @@ export default function BookingAutoCheckin() {
 
   // Dừng quét
   const stopScanning = () => {
+    scanActiveRef.current = false;
+
+    // Stop zxing controls loop
+    if (controlsRef.current && controlsRef.current.stop) {
+       try {
+         controlsRef.current.stop();
+       } catch (e) {
+         console.warn("Failed to stop controls", e);
+       }
+       controlsRef.current = null;
+    }
+
     // Dừng stream
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
@@ -266,6 +297,12 @@ export default function BookingAutoCheckin() {
       videoRef.current.srcObject = null;
     }
 
+    if (codeReaderRef.current && typeof (codeReaderRef.current as any).reset === 'function') {
+      try {
+        (codeReaderRef.current as any).reset();
+      } catch (e) {}
+    }
+    
     codeReaderRef.current = null;
     setIsScanning(false);
   };
@@ -296,6 +333,10 @@ export default function BookingAutoCheckin() {
 
   return (
     <div className="checkin-page">
+      <MessageContainer
+        messages={message.messages}
+        onRemove={message.removeMessage}
+      />
       <PageHeader
         showBack
         breadcrumbs={[
@@ -308,110 +349,113 @@ export default function BookingAutoCheckin() {
           <button
             className="btn-add"
             onClick={() => {
-              setBookings(initialBookings);
+              loadBookings();
               setScannedBooking(null);
               setErrorMsg("");
             }}
+            style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
           >
-            🔄 Reset Test Data
+            <RefreshCw size={18} /> Tải lại Bookings
           </button>
         }
       />
       <div className="checkin-header">
-        <h1>📱 Check-in tự động bằng QR</h1>
+        <h1><span className="red-square"></span> Check-in tự động bằng QR</h1>
         <p>Quét mã QR trên vé để check-in nhanh chóng</p>
       </div>
 
-      <div className="qr-reader-section">
-        <div className="qr-reader-container">
-          <video
-            ref={videoRef}
-            autoPlay
-            muted
-            playsInline
-            className="qr-video"
-          />
+      <div className="checkin-split-layout">
+        <div className="left-panel">
+          <div className="qr-reader-section">
+            <div className="qr-reader-container">
+              <video
+                ref={videoRef}
+                autoPlay
+                muted
+                playsInline
+                className="qr-video"
+              />
 
-          {!isScanning && (
-            <div className="qr-overlay">
-              <div className="qr-frame"></div>
-              <p>Camera chưa được bật</p>
+              {!isScanning && (
+                <div className="qr-overlay">
+                  <div className="qr-frame"></div>
+                  <p>Camera chưa được bật</p>
+                </div>
+              )}
             </div>
-          )}
+
+            <div className="scanner-controls">
+              {!isScanning ? (
+                <button className="btn-start" onClick={startScanning}>
+                  Bật Camera & Quét QR
+                </button>
+              ) : (
+                <button className="btn-stop" onClick={stopScanning}>
+                  Dừng Quét
+                </button>
+              )}
+              <button className="btn-manual" onClick={handleManualInput}>Nhập mã</button>
+            </div>
+          </div>
         </div>
 
-        <div className="scanner-controls">
-          {!isScanning ? (
-            <button className="btn-start" onClick={startScanning}>
-              🎥 Bật Camera & Quét QR
-            </button>
+        <div className="right-panel">
+          {scannedBooking && Object.keys(scannedBooking).length > 0 ? (
+            <div className="booking-info">
+              <div className="booking-header">
+                <h2><span className="green-dot"></span> Thông tin Cuống Vé</h2>
+                <span className={`status-badge ${scannedBooking.status || scannedBooking.tokenStatus || 'USED'}`}>
+                  {scannedBooking.status || scannedBooking.tokenStatus || 'USED'}
+                </span>
+              </div>
+
+              <div className="booking-details">
+                <div className="detail-row">
+                  <span className="label">Phim</span>
+                  <span className="value">{scannedBooking.movieTitle || scannedBooking.movieName || scannedBooking.movie || "N/A"}</span>
+                </div>
+
+                <div className="detail-row">
+                  <span className="label">Suất chiếu</span>
+                  <span className="value">
+                    {scannedBooking.showTime || scannedBooking.time || "N/A"} — {scannedBooking.showDate || scannedBooking.date || "N/A"}
+                  </span>
+                </div>
+
+                <div className="detail-row">
+                  <span className="label">Phòng / Ghế</span>
+                  <span className="value">
+                    {scannedBooking.hallName || scannedBooking.hall || scannedBooking.roomName || "N/A"} 
+                    {" — Ghế "} 
+                    {scannedBooking.seatNames || scannedBooking.seatName || scannedBooking.seats || "N/A"}
+                  </span>
+                </div>
+
+                <div className="detail-row booking-code-row">
+                  <span className="label">Mã Booking</span>
+                  <span className="value code-val">{scannedBooking.bookingCode || scannedBooking.code || "N/A"}</span>
+                </div>
+
+                <div className="detail-row">
+                  <span className="label">Khách hàng</span>
+                  <span className="value">{scannedBooking.customerName || scannedBooking.userName || "Khách vãng lai"}</span>
+                </div>
+
+                <div className="detail-row">
+                  <span className="label">Loại ghế</span>
+                  <span className="value">Standard</span>
+                </div>
+              </div>
+            </div>
           ) : (
-            <button className="btn-stop" onClick={stopScanning}>
-              ⏹️ Dừng Quét
-            </button>
+            <div className="booking-info placeholder">
+               <span className="placeholder-icon"><Camera size={48} color="var(--admin-text-muted)" /></span>
+               <h3>Đang chờ quét thẻ...</h3>
+               <p>Hãy đưa mã QR vào trước ống kính camera. Thông tin vé sẽ hiển thị tại đây.</p>
+            </div>
           )}
         </div>
       </div>
-
-      {errorMsg && (
-        <div className="error-message">
-          <p>{errorMsg}</p>
-          {cameraPermission === "denied" && (
-            <button className="btn-retry" onClick={requestCameraPermission}>
-              🔄 Thử lại
-            </button>
-          )}
-        </div>
-      )}
-
-      {scannedBooking && (
-        <div className="booking-info">
-          <div className="booking-header">
-            <h2>✅ Thông tin Booking</h2>
-            <span className={`status-badge ${scannedBooking.status}`}>
-              {scannedBooking.status}
-            </span>
-          </div>
-
-          <div className="booking-details">
-            <div className="detail-row">
-              <span className="label">Mã Booking:</span>
-              <span className="value">{scannedBooking.booking_code}</span>
-            </div>
-
-            <div className="detail-row">
-              <span className="label">Khách hàng:</span>
-              <span className="value">{scannedBooking.customer_name}</span>
-            </div>
-
-            <div className="detail-row">
-              <span className="label">Email:</span>
-              <span className="value">{scannedBooking.customer_email}</span>
-            </div>
-
-            <div className="detail-row">
-              <span className="label">Số điện thoại:</span>
-              <span className="value">{scannedBooking.customer_phone}</span>
-            </div>
-
-            <div className="detail-row highlight">
-              <span className="label">Tổng tiền:</span>
-              <span className="value">
-                {scannedBooking.total_amount.toLocaleString("vi-VN")} ₫
-              </span>
-            </div>
-
-            {scannedBooking.checked_in_at && (
-              <div className="detail-row success">
-                <span className="label">Check-in lúc:</span>
-                <span className="value">
-                  {new Date(scannedBooking.checked_in_at).toLocaleString("vi-VN")}
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
 
       {/* Camera Permission Instructions */}
       {cameraPermission === "denied" && (
