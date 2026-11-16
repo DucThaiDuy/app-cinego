@@ -1,303 +1,129 @@
-import Nav from "../components/nav";
 import "./home.scss";
 import { useTranslation } from "react-i18next";
-// import Showtime from "../components/Showtime/Showtime";
-
-import FacebookOutlinedIcon from "@mui/icons-material/FacebookOutlined";
-import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
-import DateRangeOutlinedIcon from "@mui/icons-material/DateRangeOutlined";
-import SubscriptionsOutlinedIcon from "@mui/icons-material/SubscriptionsOutlined";
-
-// import ArrowButton from "../components/ArrowButton/ArrowButton";
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
+import StarIcon from '@mui/icons-material/Star';
+import LocalMoviesIcon from '@mui/icons-material/LocalMovies';
+import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 const Home = () => {
   const { t } = useTranslation();
 
+  const movies = [
+    { id: 1, title: "Avengers: Endgame", genre: "Action • 181 min", rating: "4.9", img: "8UlWHLMpgZm9bx6QYh0NFoq67TZ.jpg" },
+    { id: 2, title: "Black Widow", genre: "Action • 134 min", rating: "4.5", img: "7WsyChvgynooYst13uO9unS9m9u.jpg" },
+    { id: 3, title: "Lion King", genre: "Adventure • 118 min", rating: "4.7", img: "pgqK0arqP7whcyu0puvv7DPh9j1.jpg" },
+    { id: 4, title: "Joker", genre: "Drama • 122 min", rating: "4.8", img: "x6v867Sbeu66Q824pAs044pXovT.jpg" },
+    { id: 5, title: "Avatar: Way of Water", genre: "Sci-Fi • 192 min", rating: "4.9", img: "rS8fFF46O05Yvbtm76Y899UId6v.jpg" },
+    { id: 6, title: "Inception", genre: "Sci-Fi • 148 min", rating: "4.8", img: "u96v9vS6fUnm045VpZ7V9r5f5Yp.jpg" },
+    { id: 7, title: "Titanic", genre: "Romance • 194 min", rating: "4.6", img: "1g0dhYmWy309S6vuh4AExSfy99o.jpg" },
+    { id: 8, title: "Interstellar", genre: "Sci-Fi • 169 min", rating: "4.9", img: "vS95T03yUnm045VpZ7V9r5f5Yp.jpg" },
+  ];
+
   return (
     <div className="home-page">
-      <Nav />
-
-      {/* ===== HERO MOVIE ===== */}
-      <section className="hero-movie">
-        <div className="overlay" />
+      {/* ===== HERO BANNER ===== */}
+      <section className="hero-banner">
+        <div className="hero-bg">
+          <img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=2070&auto=format&fit=crop" alt="Hero" />
+        </div>
         <div className="hero-content">
-          <h1>AVENGERS: ENDGAME</h1>
-          <p>The ultimate cinematic experience on the big screen</p>
-          <div className="hero-actions">
-            <button className="btn-primary">{t("Book_Ticket")}</button>
-            <button className="btn-outline">{t("Watch_Trailer")}</button>
+          <span className="hero-tag">NEW RELEASE</span>
+          <h1>DUNE: PART TWO</h1>
+          <p>Explore the mythic journey of Paul Atreides as he unites with Chani and the Fremen while on a path of revenge.</p>
+          <div className="btn-group">
+            <button className="btn-book">
+              <ConfirmationNumberIcon sx={{ mr: 1, fontSize: 20 }} />
+              {t("Book_Ticket")}
+            </button>
+            <button className="btn-trailer">
+              <PlayArrowIcon sx={{ mr: 1, fontSize: 24 }} />
+              {t("Watch_Trailer")}
+            </button>
           </div>
         </div>
       </section>
 
-      {/* ===== SHOWTIME ===== */}
-      <section className="showtime-section">{/* <Showtime /> */}</section>
-
-      {/* ===== UPCOMING ===== */}
-      <section className="main-section">
-        <div className="main-header">
-          <h2>{t("Featured_Movies")}</h2>
-
-          <div className="main-tabs">
-            <button className="active">{t("Now_Showing")}</button>
-            <button>{t("Upcoming")}</button>
-            <button>{t("Specials")}</button>
+      {/* ===== MOVIES EXPLORER ===== */}
+      <section className="section-container">
+        <div className="section-header">
+          <h2>Movies Now Playing</h2>
+          <div className="filter-tabs">
+            <span className="active">{t("Now_Showing")}</span>
+            <span>{t("Upcoming")}</span>
+            <span>Premier</span>
           </div>
         </div>
 
-        <div className="movie-list">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <div className="movie-item" key={i}>
+        <div className="movie-grid">
+          {movies.map((movie) => (
+            <div className="movie-card" key={movie.id}>
               <div className="poster">
-                <img
-                  src="https://image.tmdb.org/t/p/w500/8UlWHLMpgZm9bx6QYh0NFoq67TZ.jpg"
-                  alt="movie"
-                />
-
-                <span className="badge">PG-13</span>
-
-                {/* HOVER ACTION */}
-                <div className="poster-overlay">
-                  <button className="btn-detail">{t("See_details")}</button>
-                  <button className="btn-book">{t("Book_Now")}</button>
+                <img src={`https://image.tmdb.org/t/p/w500/${movie.img}`} alt={movie.title} />
+                <div className="rating-chip">
+                  <StarIcon sx={{ fontSize: 14, mr: 0.5, mb: 0.2 }} />
+                  {movie.rating}
                 </div>
               </div>
-
-              <div className="info">
-                <h3>Avengers: Endgame</h3>
-                <p>Action • 181 min</p>
-                <div className="rating">★★★★★</div>
-              </div>
+              <h3>{movie.title}</h3>
+              <div className="meta">{movie.genre}</div>
             </div>
           ))}
         </div>
 
-        <div className="view-more">
-          <button>
-            {t("View_more")}
-            <span>→</span>
-          </button>
-        </div>
-      </section>
-
-      <section className="event-section">
-        <div className="section-header">
-          <h2>{t("Featured_Events")}</h2>
-          <button className="view-all">{t("View_all")}</button>
-        </div>
-
-        <div className="event-grid">
-          <div
-            className="event-card"
-            style={{
-              backgroundImage:
-                "url(https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c)",
-            }}
-          >
-            <div className="event-overlay" />
-            <div className="event-content">
-              <span className="tag hot">HOT</span>
-              <h3>Tuần lễ phim bom tấn</h3>
-              <p>Giảm đến 30% vé IMAX & 4DX</p>
-              <button>Khám phá ngay</button>
+        {/* ===== FEATURE BAR ===== */}
+        <div className="info-bar">
+          <div className="info-item">
+            <div className="icon-box">
+              <LocalMoviesIcon />
+            </div>
+            <div>
+              <h4>Premium Experience</h4>
+              <p>IMAX, 4DX, and Gold Class for ultimate comfort.</p>
             </div>
           </div>
-
-          <div
-            className="event-card"
-            style={{
-              backgroundImage:
-                "url(https://images.unsplash.com/photo-1524985069026-dd778a71c7b4)",
-            }}
-          >
-            <div className="event-overlay" />
-            <div className="event-content">
-              <span className="tag new">NEW</span>
-              <h3>Ưu đãi thành viên</h3>
-              <p>Tích điểm – đổi vé miễn phí</p>
-              <button>{t("See_details")}</button>
+          <div className="info-item">
+            <div className="icon-box">
+              <CardGiftcardIcon />
+            </div>
+            <div>
+              <h4>Membership & Offers</h4>
+              <p>Earn points with every ticket purchase.</p>
             </div>
           </div>
-
-          <div
-            className="event-card"
-            style={{
-              backgroundImage:
-                "url(https://images.unsplash.com/photo-1542204165-65bf26472b9b)",
-            }}
-          >
-            <div className="event-overlay" />
-            <div className="event-content">
-              <span className="tag special">SPECIAL</span>
-              <h3>Anime Night</h3>
-              <p>Suất chiếu anime cuối tuần</p>
-              <button>{t("Book_Now")}</button>
+          <div className="info-item">
+            <div className="icon-box">
+              <HelpOutlineIcon />
+            </div>
+            <div>
+              <h4>Support Center</h4>
+              <p>We are here to help you 24/7 with any issues.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ===== SPECIAL FORMATS ===== */}
-      {/* <section className="special-section">
+      {/* ===== NEWS & BLOG ===== */}
+      <section className="section-container" style={{ background: 'var(--bg-secondary)', marginBottom: '0' }}>
         <div className="section-header">
-          <h2>{t("Specials")}</h2>
+          <h2>Cinematic News</h2>
+          <button style={{ background: 'none', color: 'var(--brand-color)', fontWeight: 600 }}>See all news</button>
         </div>
-
-        <div className="special-grid">
-          <div className="special-card imax">
-            <span>IMAX</span>
-            <p>Big Screen</p>
-          </div>
-          <div className="special-card d4x">
-            <span>4DX</span>
-            <p>Motion Seats</p>
-          </div>
-          <div className="special-card anime">
-            <span>ANIME</span>
-            <p>Japan Hits</p>
-          </div>
-          <div className="special-card concert">
-            <span>CONCERT</span>
-            <p>Live Shows</p>
-          </div>
-        </div>
-      </section> */}
-      {/* ===== BLOG SECTION ===== */}
-      <section className="blog-section">
-        <div className="blog-header">
-          <h2>Movie Blog</h2>
-          <button className="view-all">View all</button>
-        </div>
-
-        <div className="blog-content">
-          {/* FEATURED BLOG */}
-          <div className="blog-featured">
-            <img
-              src="https://images.unsplash.com/photo-1606112219348-204d7d8b94ee"
-              alt="blog"
-            />
-
-            <div className="featured-overlay">
-              <span className="tag">Review</span>
-              <h3>Avengers: Endgame – The Ultimate Marvel Finale</h3>
-              <p>
-                A powerful ending that brought emotions, action and nostalgia
-                together.
-              </p>
-              <button>Read More →</button>
-            </div>
-          </div>
-
-          {/* BLOG LIST */}
-          <div className="blog-list">
-            {[1, 2, 3].map((i) => (
-              <div className="blog-item" key={i}>
-                <img
-                  src="https://image.tmdb.org/t/p/w500/8UlWHLMpgZm9bx6QYh0NFoq67TZ.jpg"
-                  alt="blog"
-                />
-                <div className="info">
-                  <span>News • 5 mins read</span>
-                  <h4>Top 10 Movies You Should Watch This Month</h4>
-                </div>
+        <div className="movie-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))' }}>
+          {[1, 2].map(i => (
+            <div key={i} className="news-card" style={{ background: 'var(--bg-card)', borderRadius: '20px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
+              <img src={i === 1 ? "https://images.unsplash.com/photo-1536440136628-849c177e76a1" : "https://images.unsplash.com/photo-1485846234645-a62644f84728"} style={{ width: '100%', height: '200px', objectFit: 'cover' }} alt="News" />
+              <div style={{ padding: '24px' }}>
+                <span style={{ fontSize: '0.8rem', color: 'var(--brand-color)', fontWeight: 600 }}>PROMOTION</span>
+                <h4 style={{ fontSize: '1.2rem', margin: '12px 0' }}>{i === 1 ? "Double Points Weekend" : "Upcoming Anime Festival"}</h4>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '20px' }}>Join our special event this weekend and get exclusive rewards.</p>
+                <button style={{ color: '#fff', borderBottom: '1px solid var(--brand-color)', paddingBottom: '2px', fontSize: '0.9rem' }}>Read more</button>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </section>
-
-      {/* ===== FOOTER ===== */}
-      <footer className="cinema-footer">
-        {/* TOP */}
-        <div className="footer-top">
-          <h2 className="footer-logo">The Sigtahorcle</h2>
-
-          <ul className="footer-nav">
-            <li>Terms</li>
-            <li>Lot Now</li>
-            <li>Included</li>
-            <li>Privacy Policy</li>
-            <li>Features</li>
-          </ul>
-
-          <div className="footer-social">
-            <span className="icon fb">
-              <FacebookOutlinedIcon />
-            </span>
-            <span className="icon chat">
-              <ChatOutlinedIcon />
-            </span>
-            <span className="icon calendar">
-              <DateRangeOutlinedIcon />
-            </span>
-            <span className="icon ig">
-              <SubscriptionsOutlinedIcon />
-            </span>
-          </div>
-        </div>
-
-        <div className="footer-divider" />
-
-        {/* MIDDLE */}
-        <div className="footer-middle">
-          <div className="footer-col">
-            <h4>Help Center</h4>
-            <p>
-              The vision provide your steps with hotlines, support and customer
-              care links.
-            </p>
-            <a href="#">Learn more →</a>
-          </div>
-
-          <div className="footer-col">
-            <h4>
-              <span className="brand twitter">Twitter</span>
-            </h4>
-            <p>
-              Real-time updates for premieres and cinematic events around the
-              city.
-            </p>
-            <a href="#">Follow us →</a>
-          </div>
-
-          <div className="footer-col">
-            <h4>
-              <span className="brand insta">Instagram</span>
-            </h4>
-            <p>
-              Stay inspired with exclusive scenes, trailers and
-              behind-the-scenes shots.
-            </p>
-            <a href="#">Subscribe →</a>
-          </div>
-        </div>
-
-        <div className="footer-divider" />
-
-        {/* BOTTOM */}
-        <div className="footer-bottom">
-          <div className="newsletter">
-            <h4>Bigger newsletter</h4>
-            <p>
-              Subscribe for movie releases, special formats and premium cinema
-              experiences.
-            </p>
-
-            <div className="newsletter-form">
-              <input placeholder="Enter your email" />
-              <button>Sign up</button>
-            </div>
-          </div>
-
-          <div className="subscription">
-            <input placeholder="Subscription..." />
-          </div>
-        </div>
-
-        <div className="copyright">
-          © 2025 Cinema Platform. All rights reserved.
-        </div>
-      </footer>
     </div>
   );
 };

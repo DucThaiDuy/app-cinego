@@ -8,6 +8,18 @@ const Nav = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  /* ===== Detect scroll ===== */
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   /* ===== Detect mobile ===== */
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
@@ -59,11 +71,11 @@ const Nav = () => {
   const [openSpecials, setOpenSpecials] = useState(false);
 
   return (
-    <nav className="main-nav">
+    <nav className={`main-nav ${scrolled ? "scrolled" : ""}`}>
       <div className="nav-container">
         {/* Logo */}
         <div className="logo">
-          <Link to="/home">{t("login_title")}</Link>
+          <Link to="/home">CineGo</Link>
         </div>
 
         {/* Desktop Links */}
