@@ -46,6 +46,7 @@ export const adminHallService = {
       url: `${API.ADMIN.HALLS}/create-with-file`,
       method: "POST",
       data: formData,
+      headers: { "Content-Type": "multipart/form-data" },
     });
     return response.data;
   },
@@ -56,6 +57,7 @@ export const adminHallService = {
       url: `${API.ADMIN.HALLS}/${id}/with-file`,
       method: "PUT",
       data: formData,
+      headers: { "Content-Type": "multipart/form-data" },
     });
     return response.data;
   },

@@ -17,4 +17,27 @@ export interface BookingResponse {
   createdAt: string;
   status: BookingStatus;
   paymentMethod: PaymentMethod;
+  
+  // Các field phụ của CheckInTokenResponse có thể rớt vào object này
+  movieTitle?: string;
+  movieName?: string;
+  movie?: string;
+  showDate?: string;
+  date?: string;
+  showTime?: string;
+  time?: string;
+  hallName?: string;
+  hall?: string;
+  roomName?: string;
+  seatNames?: string;
+  seatName?: string;
+  seats?: string;
+  code?: string;
+  userName?: string;
+  email?: string;
+  phone?: string;
+  phoneNumber?: string;
+  price?: number;
+  bookingDate?: string;
+  tokenStatus?: string;
 }

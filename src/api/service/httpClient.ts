@@ -23,11 +23,23 @@ http.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-// ❌ Không swallow lỗi
+// ❌ Xử lý lỗi chung
 http.interceptors.response.use(
   (response) => response,
   (error) => {
     console.error("API Error:", error.response?.data || error.message);
+    
+    // Nếu token hết hạn hoặc không hợp lệ (401/403), tự động đăng xuất
+    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+      const isLoginPath = window.location.pathname.includes('/login');
+      if (!isLoginPath) {
+        console.warn("Token invalid or expired. Auto logging out...");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("admin_info");
+        window.location.href = "/admin/login"; // Chuyển về trang đăng nhập
+      }
+    }
+    
     return Promise.reject(error);
   },
 );

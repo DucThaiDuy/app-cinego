@@ -19,6 +19,44 @@ export const adminmovieService = {
     console.log("API Response Data:", response.data);
     return response.data;
   },
+
+  // ================= CREATE MOVIE =================
+  createMovie: async (movieData: any) => {
+    const response = await service({
+      url: API.ADMIN.MOVIES,
+      method: "POST",
+      data: movieData,
+    });
+    return response.data;
+  },
+
+  // ================= FETCH MOVIE BY ID =================
+  fetchMovieById: async (id: number) => {
+    const response = await service({
+      url: `${API.ADMIN.MOVIES}/${id}`,
+      method: "GET",
+    });
+    return response.data;
+  },
+
+  // ================= UPDATE MOVIE =================
+  updateMovie: async (id: number, movieData: any) => {
+    const response = await service({
+      url: `${API.ADMIN.MOVIES}/${id}`,
+      method: "PUT",
+      data: movieData,
+    });
+    return response.data;
+  },
+
+  // ================= DELETE MOVIE =================
+  deleteMovie: async (id: number) => {
+    const response = await service({
+      url: `${API.ADMIN.MOVIES}/${id}`,
+      method: "DELETE",
+    });
+    return response.data;
+  },
 };
 
 export const publicMovieService = {

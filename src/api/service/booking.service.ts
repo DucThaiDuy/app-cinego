@@ -59,4 +59,14 @@ export const adminBookingService = {
       method: "DELETE",
     });
   },
+
+  // ================= CHECK-IN QR =================
+  checkInQr: async (token: string, adminId: number): Promise<any> => {
+    const response = await service<ApiResponse<any>>({
+      url: `/check-in/scan`,
+      method: "POST",
+      data: { token, adminId },
+    });
+    return response.data;
+  },
 };

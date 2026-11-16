@@ -31,12 +31,11 @@ export const authService = {
     localStorage.removeItem("admin_info");
   },
 
-  getRole(): string | null {
-    const info = JSON.parse(localStorage.getItem("admin_info") || "{}");
-    return info.role || null;
-  },
-
   isAuthenticated(): boolean {
     return !!localStorage.getItem("access_token");
+  },
+
+  getAdminInfo() {
+    return JSON.parse(localStorage.getItem("admin_info") || "{}");
   },
 };
