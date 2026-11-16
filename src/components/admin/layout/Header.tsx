@@ -106,14 +106,24 @@ export default function Header({ toggleSidebar }: HeaderProps) {
           {/* Dropdown Menu */}
           {showDropdown && (
             <div className="admin-dropdown">
-              <a href="/admin/profile" className="dropdown-item">
+              <a onClick={() => {
+                const role = authService.getAdminInfo().role;
+                const base = role === 'ADMIN' ? ROUTES.ADMIN.BASE : ROUTES.MANAGER.BASE;
+                navigate(`${base}/profile`);
+                setShowDropdown(false);
+              }} className="dropdown-item">
                 <span className="dropdown-icon">
                   <PersonSharpIcon />
                 </span>
                 <span>Thông tin cá nhân</span>
               </a>
 
-              <a href="/admin/settings" className="dropdown-item">
+              <a onClick={() => {
+                const role = authService.getAdminInfo().role;
+                const base = role === 'ADMIN' ? ROUTES.ADMIN.BASE : ROUTES.MANAGER.BASE;
+                navigate(`${base}/settings`);
+                setShowDropdown(false);
+              }} className="dropdown-item">
                 <span className="dropdown-icon">
                   <SettingsOutlinedIcon />
                 </span>

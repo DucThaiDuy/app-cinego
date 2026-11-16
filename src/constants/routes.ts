@@ -16,11 +16,21 @@ export const ROUTES = {
     SHOWTIMES: "showtimes",
     BOOKINGS: "bookings",
     USERS: "users",
+    HALLS: "halls",
+    FOOD: "food",
+    VOUCHERS: "vouchers",
+    STAFF: "staff",
+    REPORTS: "reports",
+    NEWS: "news",
+    PRICING: "pricing",
 
     // ADD
     ADD_SHOWTIME: "showtime/add-showtime",
     ADD_MOVIE: "movies/add-movie",
+    EDIT_MOVIE: "movies/edit/:id",
     ADD_CINEMA: "cinema/add-cinema",
+    ADD_HALL: "halls/add",
+    EDIT_HALL: "halls/edit/:id",
     ADD_BOOKING_AUTOCHECKIN: "bookings/auto-checkin",
   },
 
@@ -34,9 +44,10 @@ export const ROUTES = {
   },
 
   ROLE_REDIRECT_MAP: {
-    // SUPER_ADMIN: "/cinego/super-admin",
     ADMIN: "/cinego/super-admin",
     MANAGER: "/cinego/admin",
+    EMPLOYEE: "/cinego/pos-counter",
+    STAFF: "/cinego/pos-counter",
   },
 
   POS_COUNTER: {
