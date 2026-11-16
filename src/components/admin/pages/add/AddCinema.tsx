@@ -6,6 +6,7 @@ import TimeField from "../../../UI/TimeField";
 import InputField from "../../../UI/InputField";
 import "./scss/add-cinema.scss";
 import PageHeader from "../../../UI/PageHearder/PageHeader";
+import { ROUTES } from "../../../../constants/routes";
 
 // type CinemaStatus = "active" | "inactive" | "maintenance";
 
@@ -76,9 +77,8 @@ export default function AddCinema() {
       <PageHeader
         showBack
         breadcrumbs={[
-          { label: "Trang chủ", path: "/admin/dashboard" },
-          { label: "Quản lý rạp phim", path: "/admin/cinemas" },
-          // { label: "Lịch chiếu", path: "/admin/showtimes" },
+          { label: "Trang chủ", path: `${ROUTES.ADMIN.BASE}/${ROUTES.ADMIN.DASHBOARD}` },
+          { label: "Quản lý rạp phim", path: `${ROUTES.ADMIN.BASE}/${ROUTES.ADMIN.CINEMAS}` },
           { label: "Thêm mới" },
         ]}
         // action={

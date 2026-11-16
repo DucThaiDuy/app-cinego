@@ -1,0 +1,199 @@
+.add-hall-page {
+  animation: fadeIn 0.4s ease;
+  min-height: 100vh;
+  color: var(--text-primary);
+  background: var(--bg-color);
+
+  --accent: #ef4444;
+  --bg-card: rgba(24, 24, 27, 0.9);
+  --border: rgba(255, 255, 255, 0.05);
+}
+
+.hall-form-container-premium {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.hall-form-card {
+  width: 100%;
+  max-width: 800px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  backdrop-filter: blur(20px);
+  overflow: hidden;
+
+  .card-header {
+    background: rgba(239, 68, 68, 0.05);
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    border-bottom: 1px solid var(--border);
+
+    .icon-badge {
+      font-size: 2.5rem;
+      background: rgba(255,255,255,0.05);
+      width: 80px;
+      height: 80px;
+      display: grid;
+      place-items: center;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+    }
+
+    h3 {
+      font-size: 1.5rem;
+      margin: 0;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.01em;
+    }
+  }
+}
+
+.hall-form-v2 {
+  padding: 2.5rem;
+
+  .form-group-modern {
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    label {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #71717a;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    input, select {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      color: #fff;
+      font-size: 1rem;
+      transition: all 0.3s;
+
+      &:focus {
+        outline: none;
+        border-color: var(--accent);
+        background: rgba(0, 0, 0, 0.4);
+        box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+      }
+    }
+  }
+
+  .form-row-modern {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+
+    .flex-1 { flex: 1; }
+    @media (max-width: 600px) { flex-direction: column; }
+  }
+
+  .file-upload-zone {
+    border: 2px dashed var(--border);
+    padding: 3rem 2rem;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: rgba(0,0,0,0.1);
+
+    &:hover {
+      border-color: var(--accent);
+      background: rgba(239, 68, 68, 0.05);
+      .up-icon { color: var(--accent); transform: translateY(-5px); }
+    }
+
+    .up-icon {
+      font-size: 3.5rem;
+      color: #3f3f46;
+      transition: all 0.3s;
+    }
+
+    .texts {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      .big-text { font-size: 1rem; color: #a1a1aa; font-weight: 600; }
+      .small-text { font-size: 0.8rem; color: #52525b; }
+      .file-name { color: #22c55e; font-weight: 800; font-size: 1.2rem; }
+    }
+
+    &.has-file {
+      border-color: #22c55e;
+      background: rgba(34, 197, 94, 0.05);
+      .up-icon { color: #22c55e; }
+    }
+  }
+
+  .warning-note {
+    background: rgba(245, 158, 11, 0.05);
+    border: 1px solid rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+    padding: 10px 15px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    margin-top: 10px;
+  }
+}
+
+.form-actions-premium {
+  padding-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1.5rem;
+
+  button {
+    padding: 1rem 2.5rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 800;
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+
+  .btn-back-flat {
+    background: transparent;
+    color: #a1a1aa;
+    border: none;
+    &:hover { color: #fff; background: rgba(255,255,255,0.05); }
+  }
+
+  .btn-submit-glow {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+
+    &:hover {
+      background: #dc2626;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(239, 68, 68, 0.4);
+    }
+
+    &:disabled {
+      background: #450a0a;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

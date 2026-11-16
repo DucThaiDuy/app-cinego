@@ -12,6 +12,7 @@ import { MessageContainer, useMessage } from "../../UI/Message/Message";
 import { ConfirmContainer, useConfirm } from "../../UI/Confirm/Confirm";
 import { adminCinemaService } from "../../../api/service/cinema.service";
 import { CINEMA_STATUS } from "../../ENUM/CinemaStatus.enum";
+import { ROUTES } from "../../../constants/routes";
 import Loading from "../../UI/loading/Loading";
 
 type StatusFilter = "ALL" | "AVAILABLE" | "FULL" | "CANCELLED" | "ENDED";
@@ -100,15 +101,13 @@ export default function CinemaManagement() {
       <PageHeader
         showBack
         breadcrumbs={[
-          { label: "Trang chủ", path: "/admin/dashboard" },
-          // { label: "Quản lý phim", path: "/admin/movies" },
-          // { label: "Lịch chiếu", path: "/admin/showtimes" },
+          { label: "Trang chủ", path: `${ROUTES.ADMIN.BASE}/${ROUTES.ADMIN.DASHBOARD}` },
           { label: "Quản Lý rạp phim" },
         ]}
         action={
           <button
             className="btn-add"
-            onClick={() => navigate("/admin/cinema/add-cinema")}
+            onClick={() => navigate(`${ROUTES.MANAGER.BASE}/${ROUTES.MANAGER.ADD_CINEMA}`)}
           >
             + Thêm Rạp phim
           </button>
