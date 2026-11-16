@@ -9,12 +9,17 @@ import PageHeader from "../../UI/PageHearder/PageHeader";
 import Loading from "../../UI/loading/Loading";
 import type { MovieResponse } from "../../../api/types/model/movie.model";
 import { adminmovieService } from "../../../api/service/movie.service";
+import { ROUTES } from "../../../constants/routes";
+import { ConfirmContainer, useConfirm } from "../../UI/Confirm/Confirm";
+import { MessageContainer, useMessage } from "../../UI/Message/Message";
 
 type AgeRatingFilter = "ALL" | "P" | "K" | "T13" | "T16" | "T18" | "C";
 type StatusFilter = "ALL" | "COMING_SOON" | "NOW_SHOWING" | "ENDED";
 
 export default function MovieManagement() {
   const navigate = useNavigate();
+  const message = useMessage();
+  const { confirms, confirm, removeConfirm } = useConfirm();
 
   // State
   const [movies, setMovies] = useState<MovieResponse[]>([]);
@@ -64,13 +69,29 @@ export default function MovieManagement() {
 
   // Handlers
   const handleDelete = (id: number) => {
-    console.log("Delete movie:", id);
-    alert("Delete clicked!");
+    confirm(
+      "Bạn có chắc chắn muốn xóa phim này? Hành động này không thể hoàn tác.",
+      async () => {
+        try {
+          await adminmovieService.deleteMovie(id);
+          message.success("Xóa phim thành công!");
+          loadMovies(); // Tải lại danh sách
+        } catch (err: any) {
+          console.error("Delete movie error:", err);
+          message.error(err.response?.data?.message || "Xóa phim thất bại");
+        }
+      },
+      {
+        type: "danger",
+        title: "Xóa phim",
+        confirmText: "Xóa ngay",
+        cancelText: "Hủy",
+      }
+    );
   };
 
   const handleUpdate = (id: number) => {
-    console.log("Update movie:", id);
-    alert("Update clicked!");
+    navigate(`${ROUTES.MANAGER.BASE}/${ROUTES.MANAGER.EDIT_MOVIE.replace(":id", id.toString())}`);
   };
 
   const handlePageChange = (page: number) => {
@@ -98,6 +119,12 @@ export default function MovieManagement() {
 
   return (
     <div className="movie-page">
+      <MessageContainer
+        messages={message.messages}
+        onRemove={message.removeMessage}
+      />
+      <ConfirmContainer confirms={confirms} onRemove={removeConfirm} />
+
       {/* Header */}
       <PageHeader
         showBack
@@ -108,7 +135,7 @@ export default function MovieManagement() {
         action={
           <button
             className="btn-add"
-            onClick={() => navigate("/admin/movies/add-movie")}
+            onClick={() => navigate(`${ROUTES.MANAGER.BASE}/${ROUTES.MANAGER.ADD_MOVIE}`)}
           >
             + Thêm phim
           </button>
@@ -116,19 +143,21 @@ export default function MovieManagement() {
       />
 
       {/* Filters */}
-      <div className="movie-filters">
+      <div className="movie-filters shadow-premium" style={{ display: 'flex', gap: '16px', padding: '16px', marginBottom: '16px' }}>
         <input
           type="text"
           placeholder="🔍 Tìm theo tên / slug / mô tả..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="filter-input"
+          className="form-control"
+          style={{ flex: 2 }}
         />
 
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-          className="filter-select"
+          className="form-control"
+          style={{ flex: 1 }}
         >
           <option value="ALL">Tất cả trạng thái</option>
           <option value="NOW_SHOWING">Đang chiếu</option>
@@ -139,7 +168,8 @@ export default function MovieManagement() {
         <select
           value={ageFilter}
           onChange={(e) => setAgeFilter(e.target.value as AgeRatingFilter)}
-          className="filter-select"
+          className="form-control"
+          style={{ flex: 1 }}
         >
           <option value="ALL">Tất cả độ tuổi</option>
           <option value="P">P - Phổ biến</option>
@@ -156,7 +186,7 @@ export default function MovieManagement() {
         {loading ? (
           <Loading text="Đang tải danh sách phim..." />
         ) : (
-          <table className="movie-table">
+          <table className="modern-table">
             <thead>
               <tr>
                 <th>Phim</th>
@@ -171,7 +201,7 @@ export default function MovieManagement() {
             <tbody>
               {movies.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="empty-cell">
+                  <td colSpan={7} className="empty-cell" style={{ textAlign: 'center', padding: '32px' }}>
                     Không tìm thấy phim nào
                   </td>
                 </tr>
@@ -180,18 +210,19 @@ export default function MovieManagement() {
                   <tr key={movie.id}>
                     {/* Movie Info */}
                     <td>
-                      <div className="movie-info">
+                      <div className="movie-info" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <img
                           src={movie.posterUrl}
                           alt={movie.title}
                           className="movie-poster"
+                          style={{ width: '48px', height: '72px', objectFit: 'cover', borderRadius: '4px' }}
                         />
                         <div className="movie-details">
-                          <h4 className="movie-title">{movie.title}</h4>
-                          <div className="movie-meta">
+                          <h4 className="movie-title" style={{ margin: '0 0 4px 0', fontSize: '15px' }}>{movie.title}</h4>
+                          <div className="movie-meta" style={{ fontSize: '12px', color: 'var(--admin-text-muted)' }}>
                             {movie.originalTitle} • {movie.releaseDate}
                           </div>
-                          <div className="movie-extra">
+                          <div className="movie-extra" style={{ fontSize: '12px', color: 'var(--admin-text-muted)' }}>
                             {movie.country} • {movie.distributor}
                           </div>
                         </div>
@@ -203,7 +234,7 @@ export default function MovieManagement() {
 
                     {/* Age Rating */}
                     <td>
-                      <span className={`age-badge age-${movie.ageRating}`}>
+                      <span className={`age-badge age-${movie.ageRating}`} style={{ padding: '4px 8px', borderRadius: '4px', background: 'rgba(255,255,255,0.1)', fontSize: '12px', fontWeight: 'bold' }}>
                         {movie.ageRating}
                       </span>
                     </td>
@@ -223,28 +254,28 @@ export default function MovieManagement() {
                     </td>
 
                     {/* Featured */}
-                    <td className="featured">
+                    <td className="featured" style={{ textAlign: 'center' }}>
                       {movie.isFeatured ? "🔥" : "—"}
                     </td>
 
                     {/* Actions */}
                     <td>
-                      <div className="actions">
+                      <div className="actions" style={{ display: 'flex', gap: '8px' }}>
                         <TooltipIconButton
                           title="Sửa"
                           onClick={() => handleUpdate(movie.id)}
-                          size={50}
-                          color="#696969"
+                          size={40}
+                          color="var(--admin-text-muted)"
                         >
-                          <BorderColorIcon width={20} height={20} />
+                          <BorderColorIcon width={18} height={18} />
                         </TooltipIconButton>
                         <TooltipIconButton
                           title="Xóa"
                           onClick={() => handleDelete(movie.id)}
-                          size={50}
-                          color="#c52929ff"
+                          size={40}
+                          color="var(--admin-danger)"
                         >
-                          <DeleteIcon width={20} height={20} />
+                          <DeleteIcon width={18} height={18} />
                         </TooltipIconButton>
                       </div>
                     </td>

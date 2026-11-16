@@ -12,6 +12,7 @@ import { adminShowTimeService } from "../../../api/service/showTime.service";
 import { ShowTimeResponse } from "../../../api/types/response/ShowTimeResponse";
 import { ConfirmContainer, useConfirm } from "../../UI/Confirm/Confirm";
 import { MessageContainer, useMessage } from "../../UI/Message/Message";
+import { ROUTES } from "../../../constants/routes";
 
 type StatusFilter = "ALL" | "AVAILABLE" | "FULL" | "CANCELLED" | "ENDED";
 type LanguageFilter = "ALL" | "SUBTITLE" | "DUBBED";
@@ -101,15 +102,14 @@ export default function ShowtimeManagement() {
       <PageHeader
         showBack
         breadcrumbs={[
-          { label: "Trang chủ", path: "/admin/dashboard" },
-          { label: "Quản lý phim", path: "/admin/movies" },
-          // { label: "Lịch chiếu", path: "/admin/showtimes" },
+          { label: "Trang chủ", path: `${ROUTES.MANAGER.BASE}/${ROUTES.MANAGER.DASHBOARD}` },
+          { label: "Quản lý phim", path: `${ROUTES.MANAGER.BASE}/${ROUTES.MANAGER.MOVIES}` },
           { label: "Lịch chiếu" },
         ]}
         action={
           <button
             className="btn-add"
-            onClick={() => navigate("/admin/showtime/add-showtime")}
+            onClick={() => navigate(`${ROUTES.MANAGER.BASE}/${ROUTES.MANAGER.ADD_SHOWTIME}`)}
           >
             + Thêm lịch chiếu
           </button>

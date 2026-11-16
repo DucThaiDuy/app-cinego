@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import SearchableSelect from "../../../UI/SearchableSelect/SearchableSelect";
 import type { SelectOption } from "../../../UI/SearchableSelect/SearchableSelect";
-
+import { Film, Building2, Calendar, Clock, MonitorPlay, Globe, Pin, Save } from "lucide-react";
 import "./scss/add-showtime.scss";
 import PageHeader from "../../../UI/PageHearder/PageHeader";
+import { ROUTES } from "../../../../constants/routes";
 
 export default function AddShowtime() {
   const [movieId, setMovieId] = useState<number | string>("");
@@ -100,9 +101,9 @@ export default function AddShowtime() {
       <PageHeader
         showBack
         breadcrumbs={[
-          { label: "Trang chủ", path: "/admin/dashboard" },
-          { label: "Quản lý phim", path: "/admin/movies" },
-          { label: "Lịch chiếu", path: "/admin/showtimes" },
+          { label: "Trang chủ", path: `${ROUTES.MANAGER.BASE}/${ROUTES.MANAGER.DASHBOARD}` },
+          { label: "Quản lý phim", path: `${ROUTES.MANAGER.BASE}/${ROUTES.MANAGER.MOVIES}` },
+          { label: "Lịch chiếu", path: `${ROUTES.MANAGER.BASE}/${ROUTES.MANAGER.SHOWTIMES}` },
           { label: "Thêm mới" },
         ]}
         // action={
@@ -118,7 +119,9 @@ export default function AddShowtime() {
       <form className="showtime-form" onSubmit={handleSubmit}>
         {/* MOVIE */}
         <div className="form-group">
-          <label>🎬 Phim</label>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Film size={18} color="var(--admin-primary)" /> Phim
+          </label>
           <select
             name="movie_id"
             required
@@ -133,7 +136,9 @@ export default function AddShowtime() {
 
         {/* HALL */}
         <div className="form-group">
-          <label>🏢 Phòng chiếu</label>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Building2 size={18} color="#3b82f6" /> Phòng chiếu
+          </label>
           <SearchableSelect
             label=""
             placeholder="Tìm phim..."
@@ -155,7 +160,9 @@ export default function AddShowtime() {
 
         {/* DATE */}
         <div className="form-group">
-          <label>📅 Ngày chiếu</label>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Calendar size={18} color="#10b981" /> Ngày chiếu
+          </label>
           <input
             type="date"
             name="show_date"
@@ -167,7 +174,9 @@ export default function AddShowtime() {
 
         {/* TIME */}
         <div className="form-group">
-          <label>⏰ Giờ chiếu</label>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Clock size={18} color="#f59e0b" /> Giờ chiếu
+          </label>
           <input
             type="time"
             name="show_time"
@@ -179,7 +188,9 @@ export default function AddShowtime() {
 
         {/* FORMAT */}
         <div className="form-group">
-          <label>🎞 Định dạng</label>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <MonitorPlay size={18} color="#8b5cf6" /> Định dạng
+          </label>
           <select name="format" value={form.format} onChange={handleChange}>
             <option value="2D">2D</option>
             <option value="3D">3D</option>
@@ -190,7 +201,9 @@ export default function AddShowtime() {
 
         {/* LANGUAGE */}
         <div className="form-group">
-          <label>🌐 Ngôn ngữ</label>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Globe size={18} color="#0ea5e9" /> Ngôn ngữ
+          </label>
           <select name="language" value={form.language} onChange={handleChange}>
             <option value="subtitle">Phụ đề</option>
             <option value="dubbed">Lồng tiếng</option>
@@ -199,7 +212,9 @@ export default function AddShowtime() {
 
         {/* STATUS */}
         <div className="form-group">
-          <label>📌 Trạng thái</label>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Pin size={18} color="#f43f5e" /> Trạng thái
+          </label>
           <select name="status" value={form.status} onChange={handleChange}>
             <option value="available">Còn vé</option>
             <option value="full">Hết vé</option>
@@ -210,8 +225,8 @@ export default function AddShowtime() {
 
         {/* ACTION */}
         <div className="form-actions">
-          <button type="submit" className="btn-primary">
-            💾 Lưu lịch chiếu
+          <button type="submit" className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
+            <Save size={18} /> Lưu lịch chiếu
           </button>
         </div>
       </form>

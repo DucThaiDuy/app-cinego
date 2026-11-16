@@ -14,6 +14,7 @@ import Message, {
   useMessage,
 } from "../../UI/Message/Message";
 import { MESSAGES } from "../../../constants/ui-text";
+import { ROUTES } from "../../../constants/routes";
 
 export default function GenreManagement() {
   const [genres, setGenres] = useState<Genre[]>([]);
@@ -108,9 +109,8 @@ export default function GenreManagement() {
       <PageHeader
         showBack
         breadcrumbs={[
-          { label: "Trang chủ", path: "/admin/dashboard" },
-          { label: "Quản lý phim", path: "/admin/movies" },
-          // { label: "Lịch chiếu", path: "/admin/showtimes" },
+          { label: "Trang chủ", path: `${ROUTES.MANAGER.BASE}/${ROUTES.MANAGER.DASHBOARD}` },
+          { label: "Quản lý phim", path: `${ROUTES.MANAGER.BASE}/${ROUTES.MANAGER.MOVIES}` },
           { label: "Thể loại" },
         ]}
         action={
@@ -126,52 +126,65 @@ export default function GenreManagement() {
       </div>
 
       {/* TABLE */}
-      <div className="genre-table">
-        <div className="table-head">
-          <span>Tên</span>
-          <span>Slug</span>
-          <span>Mô tả</span>
-          <span>Ngày tạo</span>
-          <span>Cập nhật</span>
-          <span>Hành động</span>
-        </div>
+      <table className="modern-table">
+        <thead>
+          <tr>
+            <th>Tên</th>
+            <th>Slug</th>
+            <th>Mô tả</th>
+            <th>Ngày tạo</th>
+            <th>Cập nhật</th>
+            <th>Hành động</th>
+          </tr>
+        </thead>
+        <tbody>
+          {genres.map((g) => (
+            <tr key={g.id}>
+              <td><strong>{g.name}</strong></td>
+              <td className="slug">{g.slug}</td>
+              <td className="desc">{g.description}</td>
+              <td>{g.createdAt}</td>
+              <td>{g.updatedAt}</td>
+              <td>
+                <div className="actions" style={{ display: 'flex', gap: '8px' }}>
+                  <TooltipIconButton
+                    title="Update"
+                    onClick={() => handleUpdate(g.id!)}
+                    size={40}
+                    color="var(--admin-text-muted)"
+                  >
+                    <BorderColorIcon width={18} height={18} />
+                  </TooltipIconButton>
+                  <TooltipIconButton
+                    title="Delete"
+                    onClick={() => handleDelete(g.id!)}
+                    size={40}
+                    color="var(--admin-danger)"
+                  >
+                    <DeleteIcon width={18} height={18} />
+                  </TooltipIconButton>
+                </div>
+              </td>
+            </tr>
+          ))}
+          {genres.length === 0 && (
+            <tr>
+              <td colSpan={6} style={{ textAlign: 'center', padding: '32px', color: 'var(--admin-text-muted)' }}>
+                Không có dữ liệu
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
 
-        {genres.map((g) => (
-          <div className="table-row" key={g.id}>
-            <strong>{g.name}</strong>
-            <span className="slug">{g.slug}</span>
-            <span className="desc">{g.description}</span>
-            <span>{g.createdAt}</span>
-            <span>{g.updatedAt}</span>
-
-            <div className="actions">
-              {/* <button>Sửa</button> */}
-              <TooltipIconButton
-                title="Delete"
-                onClick={() => handleDelete(g.id!)}
-                size={50}
-                color="#c52929ff" // icon đỏ
-              >
-                <DeleteIcon width={20} height={20} />
-              </TooltipIconButton>
-              <TooltipIconButton
-                title="Update"
-                onClick={() => handleUpdate(g.id!)}
-                size={50}
-                color="#696969"
-              >
-                <BorderColorIcon width={20} height={20} />
-              </TooltipIconButton>
-            </div>
-          </div>
-        ))}
-        {/* DIALOG THÊM MỚI */}
-        <AddGenreDialog
-          isOpen={isDialogOpen}
-          onClose={() => setIsDialogOpen(false)}
-          onAdd={handleAddGenre}
-        />
-        {/* Pagination + chọn số item/trang */}
+      {/* DIALOG THÊM MỚI */}
+      <AddGenreDialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onAdd={handleAddGenre}
+      />
+      {/* Pagination + chọn số item/trang */}
+      <div style={{ marginTop: '16px' }}>
         <Pagination
           currentPage={currentPage}
           totalPages={Math.ceil(totalItems / itemsPerPage)}
