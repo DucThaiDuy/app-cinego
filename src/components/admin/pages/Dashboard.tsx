@@ -1,3 +1,12 @@
+import { 
+  CircleDollarSign, 
+  Popcorn, 
+  Ticket, 
+  Gift, 
+  TrendingUp, 
+  Clapperboard 
+} from "lucide-react";
+import { ReactNode } from "react";
 import "./dashboard.scss";
 
 export default function Dashboard() {
@@ -13,21 +22,41 @@ export default function Dashboard() {
 
       {/* ===== STAT CARDS ===== */}
       <div className="stats">
-        <StatCard title="Doanh thu hôm nay" value="₫5,200,000" icon="💰" />
-        <StatCard title="Vé đã bán" value="320" icon="🎟️" />
-        <StatCard title="Suất chiếu hôm nay" value="18" icon="🎬" />
-        <StatCard title="Booking chờ xử lý" value="12" icon="⏳" />
+        <StatCard 
+          title="Doanh thu vé hôm nay" 
+          value="₫5,200,000" 
+          icon={<CircleDollarSign size={28} color="#eab308" />} 
+        />
+        <StatCard 
+          title="Doanh thu bắp nước" 
+          value="₫1,850,000" 
+          icon={<Popcorn size={28} color="#f43f5e" />} 
+        />
+        <StatCard 
+          title="Vé đã bán" 
+          value="320" 
+          icon={<Ticket size={28} color="#3b82f6" />} 
+        />
+        <StatCard 
+          title="Khuyến mãi đang chạy" 
+          value="5" 
+          icon={<Gift size={28} color="#10b981" />} 
+        />
       </div>
 
       {/* ===== MAIN GRID ===== */}
       <div className="dashboard-grid">
         <div className="panel panel-large">
-          <h3>📈 Doanh thu 7 ngày gần nhất</h3>
+          <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <TrendingUp size={20} color="#dc2626" /> Doanh thu 7 ngày gần nhất
+          </h3>
           <FakeChart />
         </div>
 
         <div className="panel">
-          <h3>🎬 Suất chiếu sắp tới</h3>
+          <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Clapperboard size={20} color="#3b82f6" /> Suất chiếu sắp tới
+          </h3>
           <UpcomingShowtimes />
         </div>
       </div>
@@ -44,11 +73,13 @@ function StatCard({
 }: {
   title: string;
   value: string;
-  icon: string;
+  icon: ReactNode;
 }) {
   return (
     <div className="stat-card">
-      <div className="stat-icon">{icon}</div>
+      <div className="stat-icon-wrapper" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.03)', padding: '12px', borderRadius: '12px', marginRight: '16px' }}>
+        {icon}
+      </div>
       <div>
         <p className="stat-title">{title}</p>
         <h2 className="stat-value">{value}</h2>
@@ -58,11 +89,30 @@ function StatCard({
 }
 
 function FakeChart() {
+  const data = [120, 250, 180, 420, 310, 520, 440];
+  const days = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
+  const maxVal = 600;
+
   return (
-    <div className="fake-chart">
-      {[40, 70, 55, 80, 60, 90, 65].map((h, i) => (
-        <div key={i} style={{ height: `${h}%` }} />
-      ))}
+    <div className="chart-container">
+      <div className="chart-y-axis">
+        <span>600k</span>
+        <span>400k</span>
+        <span>200k</span>
+        <span>0</span>
+      </div>
+      <div className="chart-bars">
+        {data.map((val, i) => (
+          <div key={i} className="bar-wrapper">
+             <div className="bar-tooltip">₫{val}k</div>
+             <div 
+               className="bar-fill" 
+               style={{ height: `${(val / maxVal) * 100}%` }} 
+             />
+             <span className="bar-label">{days[i]}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
