@@ -14,4 +14,222 @@
   --admin-info: #3b82f6;
   --admin-radius-sm: 8px;
   --admin-radius-md: 12px;
+  --admin-shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --admin-shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --admin-shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --admin-shadow-premium: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+[data-theme="light"] {
+  --admin-bg: #f9fafb;
+  --admin-bg-elevated: #ffffff;
+  --admin-bg-soft: #f3f4f6;
+  --admin-border: #e5e7eb;
+  --admin-text: #111827;
+  --admin-text-muted: #6b7280;
+  --admin-primary: #dc2626;
+  --admin-primary-soft: rgba(220, 38, 38, 0.08);
+  --admin-primary-strong: #b91c1c;
+  --admin-danger: #ef4444;
+  --admin-success: #16a34a;
+  --admin-warning: #d97706;
+  --admin-info: #2563eb;
+  --admin-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --admin-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --admin-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --admin-shadow-premium: 0 8px 32px 0 rgba(100, 100, 111, 0.1);
+}
+
+/* ====================================================
+   GLOBAL PREMIUM UI UTILITIES
+   ==================================================== */
+
+/* Premium Shadows & Glassmorphism */
+.shadow-premium {
+  background: var(--admin-bg-elevated);
+  border: 1px solid var(--admin-border);
+  box-shadow: var(--admin-shadow-premium);
+  border-radius: var(--admin-radius-md);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+/* Modern Global Table */
+.modern-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--admin-bg-elevated);
+  border-radius: var(--admin-radius-md);
+  overflow: hidden;
+  box-shadow: var(--admin-shadow-premium);
+  border: 1px solid var(--admin-border);
+  backdrop-filter: blur(8px);
+  margin-top: 16px;
+
+  th {
+    background: var(--admin-bg-soft);
+    color: var(--admin-text-muted);
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--admin-border);
+  }
+
+  td {
+    padding: 16px;
+    color: var(--admin-text);
+    font-size: 14px;
+    border-bottom: 1px solid var(--admin-border);
+    transition: background-color 0.2s;
+    vertical-align: middle;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  tbody tr {
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background: var(--admin-bg-soft);
+      transform: translateY(-1px);
+      box-shadow: var(--admin-shadow-md);
+      position: relative;
+      z-index: 2;
+      
+      td {
+        border-color: transparent;
+      }
+    }
+  }
+}
+
+/* Global Status Badges */
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  letter-spacing: 0.3px;
+
+  &.active, &.CONFIRMED, &.NOW_SHOWING {
+    background: rgba(34, 197, 94, 0.15);
+    color: var(--admin-success);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+  }
+  
+  &.pending, &.PENDING, &.COMING_SOON {
+    background: rgba(245, 158, 11, 0.15);
+    color: var(--admin-warning);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+  }
+  
+  &.cancelled, &.CANCELLED, &.ENDED {
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--admin-danger);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+  }
+}
+
+/* Global Primary Action Button */
+.btn-primary, .btn-add, .btn-submit-glow {
+  background: linear-gradient(135deg, var(--admin-primary), var(--admin-primary-strong));
+  color: #fff !important;
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--admin-radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+    filter: brightness(1.1);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+/* Global Secondary/Ghost Button */
+.btn-secondary, .btn-back-flat, .btn-cancel-main {
+  background: var(--admin-bg-soft);
+  color: var(--admin-text);
+  border: 1px solid var(--admin-border);
+  padding: 10px 20px;
+  border-radius: var(--admin-radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: var(--admin-border);
+    color: var(--admin-text);
+  }
+}
+
+/* Global Form Inputs */
+.form-control, input[type="text"], input[type="number"], input[type="date"], input[type="time"], select, textarea {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--admin-bg);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-sm);
+  color: var(--admin-text);
+  font-size: 14px;
+  transition: all 0.3s ease;
+
+  &:focus {
+    outline: none;
+    border-color: var(--admin-primary);
+    box-shadow: 0 0 0 3px var(--admin-primary-soft);
+  }
+
+  &::placeholder {
+    color: var(--admin-text-muted);
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+/* Custom Scrollbar for Webkit */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--admin-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--admin-border);
+  border-radius: 4px;
+  
+  &:hover {
+    background: var(--admin-text-muted);
+  }
 }
