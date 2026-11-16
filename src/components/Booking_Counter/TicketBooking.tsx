@@ -1,5 +1,5 @@
 // TicketBooking.tsx
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import "./TicketBooking.scss";
 
 type Seat = {
@@ -9,7 +9,7 @@ type Seat = {
   status: "available" | "booked" | "selected";
 };
 
-const rows = ["A", "B", "C", "D", "E", "F"];
+const rows = ["A", "B", "C", "D", "E", "F", "G", "H"];
 const seatsPerRow = 10;
 
 const generateSeats = (): Seat[] => {
@@ -20,7 +20,7 @@ const generateSeats = (): Seat[] => {
         id: `${row}${i}`,
         row,
         number: i,
-        status: Math.random() < 0.2 ? "booked" : "available",
+        status: Math.random() < 0.15 ? "booked" : "available",
       });
     }
   });
@@ -29,22 +29,14 @@ const generateSeats = (): Seat[] => {
 
 const formats = ["2D", "3D", "IMAX"];
 const showtimes = ["10:00", "13:00", "16:00", "19:00", "22:00"];
+const POSTER_URL = "https://image.tmdb.org/t/p/w500/qrGtVFxaD8c7et0jUtaYhyTzzPg.jpg";
+const BG_URL = "https://image.tmdb.org/t/p/original/qrGtVFxaD8c7et0jUtaYhyTzzPg.jpg";
 
 export default function TicketBooking() {
   const [seats, setSeats] = useState<Seat[]>(generateSeats());
   const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
   const [selectedFormat, setSelectedFormat] = useState<string>("2D");
   const [selectedShowtime, setSelectedShowtime] = useState<string>("10:00");
-
-  const availableSeats = useMemo(
-    () => seats.filter((s) => s.status === "available").length,
-    [seats],
-  );
-  const bookedSeats = useMemo(
-    () => seats.filter((s) => s.status === "booked").length,
-    [seats],
-  );
-  const totalSeats = seats.length;
 
   const toggleSeat = (seat: Seat) => {
     if (seat.status === "booked") return;
@@ -63,107 +55,134 @@ export default function TicketBooking() {
     }
   };
 
-  const totalPrice = selectedSeats.length * 75000;
+  const ticketPrice = 75000;
+  const totalPrice = selectedSeats.length * ticketPrice;
 
   return (
-    <div className="ticket-booking">
-      {/* HEADER */}
-      <div className="header">
-        <img
-          src="https://image.tmdb.org/t/p/w500/qrGtVFxaD8c7et0jUtaYhyTzzPg.jpg"
-          alt="poster"
-          className="poster"
-        />
-        <div className="movie-info">
-          <h1>Mission: Impossible</h1>
-          <p>⭐ 8.5 • 148 phút</p>
-          <p className="description">
-            Hành động - Phiêu lưu - Kịch tính, đỉnh cao của Tom Cruise!
-          </p>
-        </div>
-      </div>
-
-      {/* FORMAT SELECTION */}
-      <div className="format-selection">
-        <h2>Chọn định dạng</h2>
-        <div className="format-list">
-          {formats.map((fmt) => (
-            <button
-              key={fmt}
-              className={`format-btn ${selectedFormat === fmt ? "active" : ""}`}
-              onClick={() => setSelectedFormat(fmt)}
-            >
-              {fmt}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* SHOWTIME SELECTION */}
-      <div className="showtime-selection">
-        <h2>Chọn suất chiếu</h2>
-        <div className="showtime-list">
-          {showtimes.map((time) => (
-            <button
-              key={time}
-              className={`showtime-btn ${
-                selectedShowtime === time ? "active" : ""
-              }`}
-              onClick={() => setSelectedShowtime(time)}
-            >
-              {time}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* SEAT SELECTION */}
-      <div className="seat-selection">
-        <h2>Chọn ghế</h2>
-        <div className="legend">
-          <span>
-            <b className="legend-dot available" /> Trống: {availableSeats}
-          </span>
-          <span>
-            <b className="legend-dot selected" /> Đã chọn:{" "}
-            {selectedSeats.length}
-          </span>
-          <span>
-            <b className="legend-dot booked" /> Đã bán: {bookedSeats}
-          </span>
-          <span className="legend-total">Tổng: {totalSeats} ghế</span>
-        </div>
-        <div className="screen">MÀN HÌNH</div>
-        <div className="seats-grid">
-          {seats.map((seat) => (
-            <div
-              key={seat.id}
-              className={`seat ${seat.status}`}
-              onClick={() => toggleSeat(seat)}
-              title={`Ghế: ${seat.id}\nGiá: 100.000đ\nLoại: Thường`}
-            >
-              {seat.id}
+    <div className="ticket-booking-v2">
+      {/* Blurred background image for premium cinematic feel */}
+      <div 
+        className="dynamic-bg" 
+        style={{ backgroundImage: `url(${BG_URL})` }} 
+      />
+      
+      <div className="booking-wrapper">
+        <div className="content-grid">
+          
+          {/* LEFT PANEL: Movie & Settings */}
+          <div className="left-panel">
+            <div className="movie-card glass-morphism">
+              <img src={POSTER_URL} alt="Mission Impossible" className="poster" />
+              <div className="info">
+                <h1>Mission: Impossible</h1>
+                <div className="badges">
+                  <span className="badge imdb">⭐ 8.5/10</span>
+                  <span className="badge time">148 phút</span>
+                  <span className="badge age">C16</span>
+                </div>
+                <p className="desc">
+                  Ethan Hunt và đội IMF dấn thân vào nhiệm vụ nguy hiểm nhất từ trước đến nay: theo dõi một loại vũ khí đáng sợ có thể đe dọa toàn nhân loại.
+                </p>
+              </div>
             </div>
-          ))}
-        </div>
-      </div>
 
-      {/* CHECKOUT */}
-      <div className="checkout">
-        <p>
-          <strong>Định dạng:</strong> {selectedFormat} |{" "}
-          <strong>Suất chiếu:</strong> {selectedShowtime}
-        </p>
-        <p>
-          <strong>Ghế đã chọn:</strong>{" "}
-          {selectedSeats.map((s) => s.id).join(", ") || "Chưa chọn"}
-        </p>
-        <p>
-          <strong>Tổng tiền:</strong> {totalPrice.toLocaleString()} VND
-        </p>
-        <button className="book-btn" disabled={selectedSeats.length === 0}>
-          Đặt vé ngay
-        </button>
+            <div className="selections-group">
+              <div className="selection-box glass-morphism">
+                <h3>Định dạng chiếu</h3>
+                <div className="options">
+                  {formats.map((fmt) => (
+                    <button
+                      key={fmt}
+                      className={selectedFormat === fmt ? "btn-opt active" : "btn-opt"}
+                      onClick={() => setSelectedFormat(fmt)}
+                    >
+                      {fmt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="selection-box glass-morphism">
+                <h3>Giờ chiếu</h3>
+                <div className="options">
+                  {showtimes.map((time) => (
+                    <button
+                      key={time}
+                      className={selectedShowtime === time ? "btn-opt active" : "btn-opt"}
+                      onClick={() => setSelectedShowtime(time)}
+                    >
+                      {time}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT PANEL: Seats */}
+          <div className="right-panel glass-morphism">
+            <div className="screen-container">
+              <div className="screen-glow"></div>
+              <div className="screen-text">MÀN HÌNH</div>
+            </div>
+
+            <div className="seats-map">
+              {seats.map((seat) => (
+                <div
+                  key={seat.id}
+                  className={`seat-btn ${seat.status}`}
+                  onClick={() => toggleSeat(seat)}
+                  title={`Ghế ${seat.id} - ${ticketPrice.toLocaleString()}đ`}
+                >
+                  <span className="seat-text">{seat.id}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="seat-legend">
+              <div className="legend-item">
+                <div className="box available"></div>
+                <span>Ghế trống</span>
+              </div>
+              <div className="legend-item">
+                <div className="box selected"></div>
+                <span>Đang chọn</span>
+              </div>
+              <div className="legend-item">
+                <div className="box booked"></div>
+                <span>Đã bán</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        {/* BOTTOM CHECKOUT BAR */}
+        <div className="checkout-bar glass-morphism-strong">
+          <div className="checkout-details">
+            <div className="detail-item">
+              <span className="lbl">Suất chiếu</span>
+              <strong className="val">{selectedFormat} - {selectedShowtime}</strong>
+            </div>
+            <div className="divider"></div>
+            <div className="detail-item">
+              <span className="lbl">Ghế đã chọn ({selectedSeats.length})</span>
+              <strong className="val seat-list">
+                {selectedSeats.length > 0 
+                  ? selectedSeats.map((s) => s.id).join(", ") 
+                  : "Vui lòng chọn ghế"}
+              </strong>
+            </div>
+            <div className="divider"></div>
+            <div className="detail-item">
+              <span className="lbl">Tổng thanh toán</span>
+              <strong className="val price">{totalPrice.toLocaleString()} ₫</strong>
+            </div>
+          </div>
+          <button className="btn-book" disabled={selectedSeats.length === 0}>
+            TIẾP TỤC ĐẶT VÉ
+          </button>
+        </div>
       </div>
     </div>
   );
